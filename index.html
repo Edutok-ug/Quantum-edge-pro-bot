@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>Quantum Edge Pro v6 | Universal Deriv Bot</title>
+<title>Quantum Edge Pro v6 | Deriv Bot</title>
 <script src="https://s3.tradingview.com/tv.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
 <style>
@@ -36,7 +36,7 @@ body{font-family:var(--ff);background:var(--bg);color:var(--text);min-height:100
 .g2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
 .g4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
 .g6{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;}
-select,input[type=number],input[type=text],input[type=password],input[type=tel]{width:100%;padding:9px 13px;background:#080e1f;border:1px solid var(--border);border-radius:10px;color:var(--text);font-family:var(--ff);font-size:0.82rem;outline:none;transition:.2s;}
+select,input[type=number],input[type=text],input[type=password]{width:100%;padding:9px 13px;background:#080e1f;border:1px solid var(--border);border-radius:10px;color:var(--text);font-family:var(--ff);font-size:0.82rem;outline:none;transition:.2s;}
 select:focus,input:focus{border-color:var(--gold);}
 .plabel{font-size:0.6rem;color:var(--sub);text-transform:uppercase;letter-spacing:1px;margin-bottom:5px;}
 .btn{display:inline-flex;align-items:center;gap:6px;padding:9px 20px;border-radius:10px;font-weight:700;font-size:0.78rem;cursor:pointer;transition:.15s;border:none;font-family:var(--ff);}
@@ -157,15 +157,13 @@ select:focus,input:focus{border-color:var(--gold);}
 .sc-BUY,.sc-SCALP-LONG{background:#10b98122;color:var(--green);border:1px solid var(--green);}
 .sc-SELL,.sc-SCALP-SHORT{background:#ef444422;color:var(--red);border:1px solid var(--red);}
 .sc-HOLD{background:#f59e0b22;color:var(--gold);border:1px solid var(--gold);}
-.account-selector{background:#0a1628;border-radius:10px;padding:12px;border:1px solid var(--border);margin-bottom:12px;}
-.account-selector select{background:#080e1f;border:1px solid var(--border);border-radius:8px;padding:10px;color:var(--text);width:100%;font-size:0.85rem;}
 @media(max-width:680px){.g4,.g6{grid-template-columns:1fr 1fr;}.strat-grid{grid-template-columns:1fr 1fr;}.page{padding:14px 13px 90px;}.chart-wrap{height:260px;}.chat-modal{width:calc(100vw - 18px);right:9px;height:65vh;}.bot-config-grid{grid-template-columns:1fr;}}
 </style>
 </head>
 <body>
 
 <nav class="topnav">
-  <div class="brand"><div><h1>⚡ QUANTUM EDGE PRO <span style="font-size:0.7rem;color:var(--sub);">v6</span></h1><sub>UNIVERSAL DERIV BOT</sub></div></div>
+  <div class="brand"><div><h1>⚡ QUANTUM EDGE PRO <span style="font-size:0.7rem;color:var(--sub);">v6</span></h1><sub>DERIV WEBSOCKET BOT</sub></div></div>
   <div class="nav-right">
     <span class="pill pill-green">🔴 LIVE</span>
     <span class="pill pill-blue" id="sessionPill">⏳ SESSION</span>
@@ -307,21 +305,13 @@ select:focus,input:focus{border-color:var(--gold);}
 <!-- DERIV BOT PAGE -->
 <div id="page-bot" class="page">
   <div class="panel">
-    <div class="ptitle">🤖 Universal Deriv Auto Trading Bot</div>
-    
-    <div class="account-selector">
-      <div class="plabel">📊 Select Account to Trade</div>
-      <select id="accountSelect">
-        <option value="">-- Connect to see accounts --</option>
-      </select>
-      <div style="margin-top:6px;font-size:0.65rem;color:var(--sub);">Supports: cTrader Demo/Real, MT5 Demo/Real, Options Demo/Real</div>
-    </div>
+    <div class="ptitle">🤖 Deriv Auto Trading Bot</div>
     
     <div class="deriv-status">
       <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
         <div><div class="ds-label">🔌 Status</div><div class="ds-value" id="derivConnStatus" style="color:var(--red);">DISCONNECTED</div></div>
         <div><div class="ds-label">💰 Balance</div><div class="ds-value" id="derivBalance">---</div></div>
-        <div><div class="ds-label">📊 Account Type</div><div class="ds-value" id="derivAccountType">---</div></div>
+        <div><div class="ds-label">📊 Account</div><div class="ds-value" id="derivAccountType">---</div></div>
       </div>
     </div>
     
@@ -340,7 +330,7 @@ select:focus,input:focus{border-color:var(--gold);}
         <div class="mtile"><div class="ml">Risk %</div><div class="mv"><input type="number" id="botRiskPct" value="1.5" step="0.1" min="0.1" max="5" style="width:100%;background:transparent;border:1px solid var(--border);border-radius:6px;padding:4px 8px;color:var(--text);font-family:var(--fm);font-size:0.8rem;"></div></div>
         <div class="mtile"><div class="ml">Max Daily Trades</div><div class="mv"><input type="number" id="botMaxTrades" value="5" step="1" min="1" max="20" style="width:100%;background:transparent;border:1px solid var(--border);border-radius:6px;padding:4px 8px;color:var(--text);font-family:var(--fm);font-size:0.8rem;"></div></div>
         <div class="mtile"><div class="ml">Min Confidence %</div><div class="mv"><input type="number" id="botMinConf" value="65" step="1" min="30" max="95" style="width:100%;background:transparent;border:1px solid var(--border);border-radius:6px;padding:4px 8px;color:var(--text);font-family:var(--fm);font-size:0.8rem;"></div></div>
-        <div class="mtile"><div class="ml">Trade Duration (ticks/sec)</div><div class="mv"><input type="number" id="botDuration" value="5" step="1" min="1" max="60" style="width:100%;background:transparent;border:1px solid var(--border);border-radius:6px;padding:4px 8px;color:var(--text);font-family:var(--fm);font-size:0.8rem;"></div></div>
+        <div class="mtile"><div class="ml">Duration (s)</div><div class="mv"><input type="number" id="botDuration" value="5" step="1" min="1" max="60" style="width:100%;background:transparent;border:1px solid var(--border);border-radius:6px;padding:4px 8px;color:var(--text);font-family:var(--fm);font-size:0.8rem;"></div></div>
       </div>
       <div style="display:flex;gap:10px;flex-wrap:wrap;font-size:0.7rem;color:var(--sub);">
         <label style="display:flex;align-items:center;gap:5px;"><input type="checkbox" id="botUseSL" checked> Use SL</label>
@@ -356,7 +346,7 @@ select:focus,input:focus{border-color:var(--gold);}
       <div class="op-row"><span class="op-label">Entry</span><span class="op-value" id="botPreviewEntry">--</span></div>
       <div class="op-row"><span class="op-label">SL</span><span class="op-value" id="botPreviewSL">--</span></div>
       <div class="op-row"><span class="op-label">TP</span><span class="op-value" id="botPreviewTP">--</span></div>
-      <div class="op-row"><span class="op-label">Stake/Lot</span><span class="op-value" id="botPreviewStake">--</span></div>
+      <div class="op-row"><span class="op-label">Stake</span><span class="op-value" id="botPreviewStake">--</span></div>
       <div class="op-row"><span class="op-label">Duration</span><span class="op-value" id="botPreviewDuration">--</span></div>
       <div style="display:flex;gap:8px;margin-top:8px;">
         <button class="btn btn-green btn-sm" id="botExecuteBtn" style="flex:1;">✅ Execute</button>
@@ -391,7 +381,7 @@ select:focus,input:focus{border-color:var(--gold);}
       </div>
       <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:14px;">
         <div class="exec-copy-tile"><div class="exec-label">Symbol</div><div class="exec-val" id="execSymbol">--</div><button class="exec-copy-btn" data-copy="execSymbol">📋 Copy</button></div>
-        <div class="exec-copy-tile"><div class="exec-label">Stake/Lot</div><div class="exec-val" id="execStake">--</div><button class="exec-copy-btn" data-copy="execStake">📋 Copy</button></div>
+        <div class="exec-copy-tile"><div class="exec-label">Stake</div><div class="exec-val" id="execStake">--</div><button class="exec-copy-btn" data-copy="execStake">📋 Copy</button></div>
         <div class="exec-copy-tile"><div class="exec-label">SL</div><div class="exec-val" id="execSL" style="color:var(--red);">--</div><button class="exec-copy-btn" data-copy="execSL">📋 Copy</button></div>
         <div class="exec-copy-tile"><div class="exec-label">TP</div><div class="exec-val" id="execTP" style="color:var(--green);">--</div><button class="exec-copy-btn" data-copy="execTP">📋 Copy</button></div>
       </div>
@@ -443,11 +433,11 @@ select:focus,input:focus{border-color:var(--gold);}
         <div style="font-size:0.65rem;color:var(--sub);margin-bottom:6px;">📌 How to get your credentials:</div>
         <ol style="font-size:0.7rem;color:var(--sub);line-height:1.8;padding-left:18px;">
           <li>Go to <strong style="color:var(--text);">developers.deriv.com</strong> → My Apps → Create App → Copy <strong style="color:var(--gold);">App ID</strong></li>
-          <li>Go to <strong style="color:var(--text);">home.deriv.com</strong> → Settings → API Token → Create with <strong style="color:var(--green);">Trade</strong> + <strong style="color:var(--green);">Read</strong> permissions</li>
-          <li>Paste both below and click <strong style="color:var(--gold);">Test Connection</strong></li>
+          <li>Go to <strong style="color:var(--text);">home.deriv.com</strong> → Settings → API Token → Create with <strong style="color:var(--green);">Trade</strong> + <strong style="color:var(--green);">Account management</strong> permissions</li>
+          <li>Paste below and click <strong style="color:var(--gold);">Test Connection</strong></li>
         </ol>
       </div>
-      <input type="text" id="derivAppId" placeholder="Your Deriv App ID" style="margin-bottom:8px;">
+      <input type="text" id="derivAppId" placeholder="Your Deriv App ID (e.g., 1089)" style="margin-bottom:8px;">
       <input type="password" id="derivApiKey" placeholder="Your Deriv PAT Token" style="margin-bottom:8px;">
       <div style="display:flex;gap:8px;flex-wrap:wrap;">
         <button class="btn btn-deriv btn-sm" id="saveDerivBtn">💾 Save Config</button>
@@ -459,9 +449,9 @@ select:focus,input:focus{border-color:var(--gold);}
   <div class="panel">
     <div class="ptitle">ℹ️ About</div>
     <div style="font-size:0.78rem;color:var(--sub);line-height:1.9;">
-      <strong style="color:var(--text);">Quantum Edge Pro v6.0 — Universal Deriv Bot</strong><br>
+      <strong style="color:var(--text);">Quantum Edge Pro v6.0 — Deriv WebSocket Bot</strong><br>
       <strong style="color:var(--gold);">His Grace Technologies</strong> | <strong style="color:var(--gold);">Godwin FX</strong> © 2026<br>
-      <span style="color:var(--deriv);">⚡ Supports: cTrader, MT5, Options | Demo & Real</span><br>
+      <span style="color:var(--deriv);">⚡ No CORS issues — Uses OTP WebSocket flow</span><br>
       <span style="color:var(--red);">⚠️ Trading involves significant risk. Always use stop-loss.</span>
     </div>
   </div>
@@ -471,7 +461,7 @@ select:focus,input:focus{border-color:var(--gold);}
 <div class="fab" id="chatFab"><div class="fab-pulse"></div><span style="font-size:1.6rem;">🤖</span></div>
 <div id="chatModal" class="chat-modal hidden">
   <div class="chat-head"><h3>🤖 Quantum AI</h3><button class="chat-close" id="chatCloseBtn">✕</button></div>
-  <div class="chat-msgs" id="chatMsgs"><div class="bbl ai">👋 Ask me anything about the signals or bot!</div></div>
+  <div class="chat-msgs" id="chatMsgs"><div class="bbl ai">👋 Ask me anything!</div></div>
   <div class="qchips">
     <span class="qc" data-q="Explain the forecast">📌 Forecast</span>
     <span class="qc" data-q="What is weighted scoring?">📊 Weighted scoring</span>
@@ -485,8 +475,7 @@ select:focus,input:focus{border-color:var(--gold);}
 
 <script>
 // ============================================================
-// QUANTUM EDGE PRO v6 — UNIVERSAL DERIV BOT
-// Uses Deriv real-time data for signals + trades ALL account types
+// QUANTUM EDGE PRO v6 — DERIV OTP WEBSOCKET FLOW
 // ============================================================
 
 // ============================================================
@@ -498,16 +487,13 @@ let AUTH_TOKEN = "";
 let requestId = 1000;
 let derivWs = null;
 let derivConnected = false;
+let derivAuthenticated = false;
 let derivBalance = 0;
 let derivCurrency = "USD";
 let derivAccountId = "";
 let derivAccountType = "";
-let derivPlatform = "";
-let accountList = [];
-let selectedAccount = null;
 let currentPrice = 0;
 let historicalPrices = [];
-let lastTickTime = Date.now();
 let barData = [];
 
 // ============================================================
@@ -544,7 +530,6 @@ let curMkt = {price:0, rsi:50, atr:0, macd:0, vol:0, support:0, resistance:0, em
 function toast(m){const t=document.createElement('div');t.className='toast';t.textContent=m;document.body.appendChild(t);setTimeout(()=>t.remove(),2700);}
 function fp(asset,val,dp){ if(val===null||val===undefined) return '---'; const v=parseFloat(val); if(['BTCUSD','ETHUSD','LTCUSD'].includes(asset)) return '$'+v.toFixed(2); if(['USDJPY','EURJPY'].includes(asset)) return v.toFixed(3); if(['XAUUSD','XAGUSD','US30','NAS100'].includes(asset)) return v.toFixed(2); return v.toFixed(dp||5); }
 function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
-function generateId(){return Date.now().toString(36)+Math.random().toString(36).substr(2,5);}
 
 function botLog(msg,type='bot-info'){
   const box=document.getElementById('botLogBox');
@@ -572,48 +557,8 @@ function addLog(msg,type='info'){
 }
 
 // ============================================================
-// DERIV CONNECTION — UNIVERSAL (Supports all account types)
+// DERIV OTP WEBSOCKET CONNECTION — THE CORRECT WAY
 // ============================================================
-
-async function getDerivAccounts() {
-    const response = await fetch(
-        `${API_BASE}/trading/v1/accounts`,
-        {
-            method: "GET",
-            headers: {
-                "Authorization": `Bearer ${AUTH_TOKEN}`,
-                "Deriv-App-ID": APP_ID,
-                "Content-Type": "application/json"
-            }
-        }
-    );
-    const result = await response.json();
-    if (!response.ok) {
-        throw new Error(result?.errors?.[0]?.message || `HTTP ${response.status}`);
-    }
-    return result.data || [];
-}
-
-async function getDerivOTP(accountId) {
-    const response = await fetch(
-        `${API_BASE}/trading/v1/accounts/${accountId}/otp`,
-        {
-            method: "POST",
-            headers: {
-                "Authorization": `Bearer ${AUTH_TOKEN}`,
-                "Deriv-App-ID": APP_ID
-            }
-        }
-    );
-    const result = await response.json();
-    if (!response.ok) {
-        throw new Error(result?.errors?.[0]?.message || `OTP failed: HTTP ${response.status}`);
-    }
-    if (!result.data?.url) {
-        throw new Error("No WebSocket URL returned");
-    }
-    return result.data.url;
-}
 
 function getDerivSymbol(asset) {
     const map = {
@@ -627,7 +572,7 @@ function getDerivSymbol(asset) {
     return map[asset] || asset;
 }
 
-async function connectDeriv() {
+async function connectDerivWebSocket() {
     APP_ID = document.getElementById('derivAppId')?.value?.trim() || derivAppId;
     AUTH_TOKEN = document.getElementById('derivApiKey')?.value?.trim() || derivApiKey;
     
@@ -636,105 +581,177 @@ async function connectDeriv() {
         return false;
     }
     
+    // Save config
+    derivAppId = APP_ID;
+    derivApiKey = AUTH_TOKEN;
+    localStorage.setItem('qep_deriv_app_id', APP_ID);
+    localStorage.setItem('qep_deriv_key', AUTH_TOKEN);
+    
+    const resultEl = document.getElementById('derivTestResult');
+    if (resultEl) { resultEl.innerHTML = '🔍 Step 1: Getting accounts...'; resultEl.style.color = 'var(--sub)'; }
+    
     try {
-        botLog('🔍 Getting Deriv accounts...', 'bot-info');
-        const accounts = await getDerivAccounts();
+        // STEP 1: Get accounts using REST API
+        botLog('📡 Getting Deriv accounts via REST API...', 'bot-info');
+        const accountsResp = await fetch(`${API_BASE}/trading/v1/accounts`, {
+            method: 'GET',
+            headers: {
+                'Authorization': 'Bearer ' + AUTH_TOKEN,
+                'Deriv-App-ID': APP_ID,
+                'Content-Type': 'application/json'
+            }
+        });
         
-        if (!accounts || accounts.length === 0) {
-            botLog('❌ No accounts found. Please create a demo account first.', 'bot-error');
+        const accountsData = await accountsResp.json();
+        
+        if (accountsData.error) {
+            botLog('❌ API Error: ' + accountsData.error.message, 'bot-error');
+            if (resultEl) { 
+                resultEl.innerHTML = '❌ API Error: ' + accountsData.error.message + '. Check your token permissions.';
+                resultEl.style.color = 'var(--red)';
+            }
             return false;
         }
         
-        accountList = accounts;
-        
-        // Populate account selector
-        const select = document.getElementById('accountSelect');
-        select.innerHTML = '';
-        accounts.forEach(acc => {
-            const option = document.createElement('option');
-            option.value = acc.account_id;
-            const type = acc.account_type || 'unknown';
-            const platform = acc.platform || 'deriv';
-            const isDemo = type === 'demo';
-            option.textContent = `${platform.toUpperCase()} ${isDemo ? 'Demo' : 'Real'} | ${acc.account_id} | ${acc.balance || 0} ${acc.currency || 'USD'}`;
-            select.appendChild(option);
-        });
-        
-        // Select first demo account by default, or first available
-        const defaultAccount = accounts.find(a => a.account_type === 'demo') || accounts[0];
-        if (defaultAccount) {
-            select.value = defaultAccount.account_id;
-            selectedAccount = defaultAccount;
+        const accounts = accountsData.data || [];
+        if (accounts.length === 0) {
+            botLog('❌ No accounts found. Create a demo account first.', 'bot-error');
+            if (resultEl) { 
+                resultEl.innerHTML = '❌ No accounts found. Create a demo account first.';
+                resultEl.style.color = 'var(--red)';
+            }
+            return false;
         }
         
-        select.onchange = function() {
-            selectedAccount = accounts.find(a => a.account_id === this.value);
-            if (selectedAccount) {
-                derivAccountId = selectedAccount.account_id;
-                derivCurrency = selectedAccount.currency || 'USD';
-                derivBalance = selectedAccount.balance || 0;
-                derivAccountType = selectedAccount.account_type || 'unknown';
-                derivPlatform = selectedAccount.platform || 'deriv';
-                document.getElementById('derivBalance').textContent = `${derivBalance} ${derivCurrency}`;
-                document.getElementById('derivAccountType').textContent = `${derivPlatform.toUpperCase()} ${derivAccountType.toUpperCase()}`;
-                botLog(`📊 Selected: ${derivPlatform.toUpperCase()} ${derivAccountType.toUpperCase()} | Balance: ${derivBalance} ${derivCurrency}`, 'bot-success');
+        // Find a demo account (or use the first one)
+        let targetAccount = accounts.find(a => a.account_type === 'demo');
+        if (!targetAccount) {
+            targetAccount = accounts[0];
+        }
+        
+        derivAccountId = targetAccount.account_id;
+        derivCurrency = targetAccount.currency || 'USD';
+        derivBalance = targetAccount.balance || 0;
+        derivAccountType = targetAccount.account_type || 'demo';
+        
+        botLog(`✅ Found account: ${derivAccountId} (${derivAccountType}) | Balance: ${derivBalance} ${derivCurrency}`, 'bot-success');
+        document.getElementById('derivBalance').textContent = `${derivBalance} ${derivCurrency}`;
+        document.getElementById('derivAccountType').textContent = derivAccountType.toUpperCase();
+        
+        if (resultEl) { 
+            resultEl.innerHTML = `✅ Account found: ${derivAccountId} | Balance: ${derivBalance} ${derivCurrency}<br>🔑 Step 2: Getting WebSocket OTP...`;
+            resultEl.style.color = 'var(--green)';
+        }
+        
+        // STEP 2: Get OTP for WebSocket
+        botLog('🔑 Getting WebSocket OTP...', 'bot-info');
+        const otpResp = await fetch(`${API_BASE}/trading/v1/accounts/${derivAccountId}/otp`, {
+            method: 'POST',
+            headers: {
+                'Authorization': 'Bearer ' + AUTH_TOKEN,
+                'Deriv-App-ID': APP_ID
+            }
+        });
+        
+        const otpData = await otpResp.json();
+        
+        if (otpData.error) {
+            botLog('❌ OTP Error: ' + otpData.error.message, 'bot-error');
+            if (resultEl) { 
+                resultEl.innerHTML = '❌ OTP Error: ' + otpData.error.message;
+                resultEl.style.color = 'var(--red)';
+            }
+            return false;
+        }
+        
+        const wsUrl = otpData.data?.url;
+        if (!wsUrl) {
+            botLog('❌ No WebSocket URL received', 'bot-error');
+            if (resultEl) { 
+                resultEl.innerHTML = '❌ No WebSocket URL received.';
+                resultEl.style.color = 'var(--red)';
+            }
+            return false;
+        }
+        
+        if (resultEl) { 
+            resultEl.innerHTML = `✅ OTP received!<br>🔌 Step 3: Connecting to WebSocket...`;
+            resultEl.style.color = 'var(--green)';
+        }
+        
+        // STEP 3: Connect to WebSocket
+        botLog('🔌 Connecting to WebSocket...', 'bot-info');
+        derivWs = new WebSocket(wsUrl);
+        
+        derivWs.onopen = function() {
+            botLog('✅ WebSocket connected!', 'bot-success');
+            derivConnected = true;
+            derivAuthenticated = true; // OTP URL already includes authentication
+            updateDerivStatus('connected');
+            document.getElementById('derivConnStatus').textContent = 'CONNECTED';
+            document.getElementById('derivConnStatus').style.color = 'var(--green)';
+            
+            if (resultEl) { 
+                resultEl.innerHTML = `✅ Connected!<br>💰 Balance: ${derivBalance} ${derivCurrency}<br>📊 Account: ${derivAccountType.toUpperCase()}`;
+                resultEl.style.color = 'var(--green)';
+            }
+            
+            // Get balance
+            sendDerivRequest({ balance: 1, subscribe: 1 });
+            
+            // Subscribe to ticks for the selected symbol
+            const symbol = document.getElementById('assetSel')?.value || 'EURUSD';
+            const derivSymbol = getDerivSymbol(symbol);
+            botLog('📡 Subscribing to ' + derivSymbol + ' ticks...', 'bot-info');
+            sendDerivRequest({ ticks: derivSymbol, subscribe: 1 });
+            
+            // Auto-generate signal after connection
+            setTimeout(() => {
+                generateSignal();
+            }, 2000);
+        };
+        
+        derivWs.onmessage = function(event) {
+            try {
+                const data = JSON.parse(event.data);
+                handleDerivMessage(data);
+            } catch(e) {}
+        };
+        
+        derivWs.onerror = function(error) {
+            botLog('❌ WebSocket error', 'bot-error');
+            updateDerivStatus('error');
+            if (resultEl) { 
+                resultEl.innerHTML = '❌ WebSocket error. Check your connection.';
+                resultEl.style.color = 'var(--red)';
             }
         };
         
-        // Trigger initial selection
-        select.onchange();
+        derivWs.onclose = function() {
+            botLog('🔌 WebSocket disconnected', 'bot-warn');
+            derivConnected = false;
+            derivAuthenticated = false;
+            updateDerivStatus('off');
+            document.getElementById('derivConnStatus').textContent = 'DISCONNECTED';
+            document.getElementById('derivConnStatus').style.color = 'var(--red)';
+            
+            // Auto-reconnect after 5 seconds
+            setTimeout(() => {
+                if (!derivConnected) {
+                    botLog('🔄 Attempting to reconnect...', 'bot-warn');
+                    connectDerivWebSocket();
+                }
+            }, 5000);
+        };
         
-        // Connect WebSocket
-        if (selectedAccount) {
-            const wsUrl = await getDerivOTP(selectedAccount.account_id);
-            botLog('🔌 Connecting WebSocket...', 'bot-info');
-            
-            derivWs = new WebSocket(wsUrl);
-            
-            derivWs.onopen = function() {
-                botLog('✅ WebSocket connected!', 'bot-success');
-                derivConnected = true;
-                updateDerivStatus('connected');
-                document.getElementById('derivConnStatus').textContent = 'CONNECTED';
-                document.getElementById('derivConnStatus').style.color = 'var(--green)';
-                
-                // Request balance
-                sendDerivRequest({ balance: 1, subscribe: 1 });
-                
-                // Subscribe to ticks for the selected symbol
-                const symbol = document.getElementById('assetSel')?.value || 'EURUSD';
-                const derivSymbol = getDerivSymbol(symbol);
-                sendDerivRequest({ ticks: derivSymbol, subscribe: 1 });
-            };
-            
-            derivWs.onmessage = function(event) {
-                try {
-                    const data = JSON.parse(event.data);
-                    handleDerivMessage(data);
-                } catch(e) {}
-            };
-            
-            derivWs.onerror = function(error) {
-                botLog('❌ WebSocket error', 'bot-error');
-                updateDerivStatus('error');
-            };
-            
-            derivWs.onclose = function() {
-                botLog('🔌 WebSocket disconnected', 'bot-warn');
-                derivConnected = false;
-                updateDerivStatus('off');
-                document.getElementById('derivConnStatus').textContent = 'DISCONNECTED';
-                document.getElementById('derivConnStatus').style.color = 'var(--red)';
-            };
-            
-            await sleep(2000);
-            return true;
-        }
-        
-        return false;
+        return true;
         
     } catch (error) {
         botLog(`❌ Connection failed: ${error.message}`, 'bot-error');
+        if (resultEl) { 
+            resultEl.innerHTML = '❌ Connection failed: ' + error.message;
+            resultEl.style.color = 'var(--red)';
+        }
         return false;
     }
 }
@@ -782,7 +799,7 @@ function handleDerivMessage(data) {
         }
         
         // Update indicators if we have enough data
-        if (historicalPrices.length > 50) {
+        if (historicalPrices.length > 20) {
             updateIndicators(historicalPrices);
         }
         
@@ -799,9 +816,9 @@ function handleDerivMessage(data) {
     }
     
     // Buy/Sell response
-    if (data.msg_type === 'buy' || data.msg_type === 'sell') {
-        const contract = data.buy || data.sell;
-        botLog(`✅ Contract executed! ID: ${contract.contract_id}`, 'bot-success');
+    if (data.msg_type === 'buy') {
+        const contract = data.buy;
+        botLog(`✅ Contract purchased! ID: ${contract.contract_id}`, 'bot-success');
         if (window._pendingTrade) {
             window._pendingTrade.resolve(contract);
             window._pendingTrade = null;
@@ -874,7 +891,7 @@ function updateDerivStatus(status) {
 }
 
 // ============================================================
-// INDICATOR CALCULATIONS (Using Deriv real-time data)
+// INDICATOR CALCULATIONS
 // ============================================================
 
 function updateIndicators(prices) {
@@ -885,7 +902,7 @@ function updateIndicators(prices) {
     
     // Calculate RSI (14 periods)
     let gains = 0, losses = 0;
-    for (let i = n - 15; i < n - 1; i++) {
+    for (let i = Math.max(0, n - 15); i < n - 1; i++) {
         const diff = prices[i+1] - prices[i];
         if (diff >= 0) gains += diff;
         else losses -= diff;
@@ -895,7 +912,7 @@ function updateIndicators(prices) {
     
     // Calculate ATR (14 periods)
     let tr = [];
-    for (let i = n - 15; i < n - 1; i++) {
+    for (let i = Math.max(0, n - 15); i < n - 1; i++) {
         const high = Math.max(prices[i], prices[i+1]);
         const low = Math.min(prices[i], prices[i+1]);
         tr.push(high - low);
@@ -995,7 +1012,7 @@ function updateIndicators(prices) {
 }
 
 // ============================================================
-// STRATEGY ENGINE (Using Deriv data)
+// STRATEGY ENGINE
 // ============================================================
 
 function runAllStrategies(d, isScalp) {
@@ -1180,7 +1197,7 @@ function calcForecastEntry(signal, d) {
 }
 
 // ============================================================
-// TRADE EXECUTION — UNIVERSAL (Supports all account types)
+// TRADE EXECUTION
 // ============================================================
 
 async function executeDerivTrade(signal, entry, sl, tp, confidence) {
@@ -1189,128 +1206,89 @@ async function executeDerivTrade(signal, entry, sl, tp, confidence) {
     }
     
     const symbol = getDerivSymbol(curAsset);
-    const isBuy = signal === 'BUY' || signal === 'SCALP-LONG';
-    const platform = derivPlatform || 'deriv';
-    const accountType = derivAccountType || 'demo';
+    const isCall = signal === 'BUY' || signal === 'SCALP-LONG';
+    const duration = parseInt(document.getElementById('botDuration')?.value) || 5;
+    const stake = Math.min(curBal * (botConfig.riskPct / 100), 1000);
     
-    // Determine trade type based on platform
-    const isOptions = platform === 'deriv_options' || platform === 'options';
-    const isCfd = platform === 'ctrader' || platform === 'mt5' || !isOptions;
+    botLog(`📊 Options: ${symbol} ${isCall ? 'CALL' : 'PUT'} | Stake: $${stake.toFixed(2)}`, 'bot-info');
     
-    botLog(`📊 Platform: ${platform} | Type: ${isOptions ? 'Options' : 'CFD'}`, 'bot-info');
-    
-    if (isOptions) {
-        // OPTIONS TRADE
-        const duration = parseInt(document.getElementById('botDuration')?.value) || 5;
-        const stake = Math.min(curBal * (botConfig.riskPct / 100), 1000);
-        botLog(`📊 Options: ${symbol} ${isBuy ? 'CALL' : 'PUT'} | Stake: $${stake.toFixed(2)}`, 'bot-info');
+    try {
+        // Get proposal
+        window._pendingProposal = { resolve: null, reject: null };
+        const proposalPromise = new Promise((resolve, reject) => {
+            window._pendingProposal.resolve = resolve;
+            window._pendingProposal.reject = reject;
+        });
         
-        try {
-            window._pendingProposal = { resolve: null, reject: null };
-            const proposalPromise = new Promise((resolve, reject) => {
-                window._pendingProposal.resolve = resolve;
-                window._pendingProposal.reject = reject;
-            });
-            
-            sendDerivRequest({
-                proposal: 1,
-                amount: stake,
-                basis: 'stake',
-                contract_type: isBuy ? 'CALL' : 'PUT',
-                currency: derivCurrency || 'USD',
-                duration: duration,
-                duration_unit: 's',
-                symbol: symbol
-            });
-            
-            const proposal = await proposalPromise;
-            botLog(`📊 Proposal received: ${proposal.display_value}`, 'bot-info');
-            
-            window._pendingTrade = { resolve: null, reject: null };
-            const tradePromise = new Promise((resolve, reject) => {
-                window._pendingTrade.resolve = resolve;
-                window._pendingTrade.reject = reject;
-            });
-            
-            sendDerivRequest({
-                buy: proposal.id,
-                price: proposal.ask_price
-            });
-            
-            const result = await tradePromise;
-            botLog(`✅ Options trade executed! Contract: ${result.contract_id}`, 'bot-success');
-            
-            return { success: true, contractId: result.contract_id, platform: 'options' };
-            
-        } catch (error) {
-            botLog(`❌ Options trade error: ${error.message}`, 'bot-error');
-            return { success: false, error: error.message };
-        }
+        sendDerivRequest({
+            proposal: 1,
+            amount: stake,
+            basis: 'stake',
+            contract_type: isCall ? 'CALL' : 'PUT',
+            currency: derivCurrency || 'USD',
+            duration: duration,
+            duration_unit: 's',
+            symbol: symbol
+        });
         
-    } else {
-        // CFD TRADE (cTrader, MT5)
-        const volume = calculateLotSize(entry, sl, derivBalance, botConfig.riskPct);
-        botLog(`📊 CFD: ${symbol} ${isBuy ? 'BUY' : 'SELL'} | Volume: ${volume}`, 'bot-info');
+        const proposal = await proposalPromise;
+        botLog(`📊 Proposal received: ${proposal.display_value}`, 'bot-info');
         
-        try {
-            window._pendingTrade = { resolve: null, reject: null };
-            const tradePromise = new Promise((resolve, reject) => {
-                window._pendingTrade.resolve = resolve;
-                window._pendingTrade.reject = reject;
-            });
-            
-            const tradeMsg = isBuy ? {
-                buy: 1,
-                symbol: symbol,
-                volume: volume,
-                type: 'market',
-                stop_loss: sl || undefined,
-                take_profit: tp || undefined
-            } : {
-                sell: 1,
-                symbol: symbol,
-                volume: volume,
-                type: 'market',
-                stop_loss: sl || undefined,
-                take_profit: tp || undefined
-            };
-            
-            sendDerivRequest(tradeMsg);
-            const result = await tradePromise;
-            botLog(`✅ CFD trade executed! Contract: ${result.contract_id}`, 'bot-success');
-            
-            // Open in trade manager
-            openTrade(signal, entry, sl, tp, curAsset, curTf, volume);
-            
-            return { success: true, contractId: result.contract_id, platform: 'cfd' };
-            
-        } catch (error) {
-            botLog(`❌ CFD trade error: ${error.message}`, 'bot-error');
-            return { success: false, error: error.message };
-        }
+        // Execute trade
+        window._pendingTrade = { resolve: null, reject: null };
+        const tradePromise = new Promise((resolve, reject) => {
+            window._pendingTrade.resolve = resolve;
+            window._pendingTrade.reject = reject;
+        });
+        
+        sendDerivRequest({
+            buy: proposal.id,
+            price: proposal.ask_price
+        });
+        
+        const result = await tradePromise;
+        botLog(`✅ Trade executed! Contract: ${result.contract_id}`, 'bot-success');
+        
+        // Log to journal
+        journal.unshift({
+            id: Date.now(),
+            time: new Date().toLocaleString(),
+            asset: curAsset,
+            tf: curTf,
+            signal: signal,
+            entry: entry,
+            sl: sl,
+            tp: tp,
+            conf: confidence,
+            strategy: '🤖 Deriv Bot',
+            result: null,
+            contractId: result.contract_id,
+            stake: stake
+        });
+        localStorage.setItem('qep_journal', JSON.stringify(journal));
+        renderJ('all');
+        
+        botTradeCount++;
+        botDailyTrades++;
+        const el = document.getElementById('botTradeCount');
+        if (el) el.textContent = '📊 Trades: ' + botTradeCount;
+        
+        // Update balance
+        sendDerivRequest({ balance: 1 });
+        
+        // Open in trade manager
+        openTrade(signal, entry, sl, tp, curAsset, curTf, stake);
+        
+        return { success: true, contractId: result.contract_id };
+        
+    } catch (error) {
+        botLog(`❌ Trade error: ${error.message}`, 'bot-error');
+        return { success: false, error: error.message };
     }
 }
 
-function calculateLotSize(entry, sl, balance, riskPct) {
-    if (!sl || !entry) return 0.01;
-    
-    const riskAmount = balance * (riskPct / 100);
-    const pipDistance = Math.abs(entry - sl);
-    
-    let pipValue = 1;
-    if (curAsset === 'XAUUSD') pipValue = 100;
-    else if (curAsset === 'BTCUSD') pipValue = 1;
-    else if (curAsset === 'USDJPY' || curAsset === 'EURJPY' || curAsset === 'GBPJPY') pipValue = 1000;
-    else pipValue = 10000;
-    
-    let lot = riskAmount / (pipDistance * pipValue);
-    lot = Math.min(10, Math.max(0.01, parseFloat(lot.toFixed(2))));
-    
-    return lot;
-}
-
 // ============================================================
-// TRADE MANAGER
+// TRADE MANAGER (COMPLETE)
 // ============================================================
 
 function openTrade(signal, entry, sl, tp, asset, tf, lot) {
@@ -1444,7 +1422,7 @@ function openTradeFromSignal() {
 }
 
 // ============================================================
-// SIGNAL GENERATION
+// SIGNAL GENERATION (COMPLETE)
 // ============================================================
 
 async function generateSignal() {
@@ -1748,7 +1726,7 @@ function copyAllOrder() {
 }
 
 // ============================================================
-// JOURNAL
+// JOURNAL (COMPLETE)
 // ============================================================
 
 function renderJ(f) {
@@ -1797,7 +1775,7 @@ function clearJ() {
 }
 
 // ============================================================
-// BOT ENGINE
+// BOT ENGINE (COMPLETE)
 // ============================================================
 
 let botConfig = { riskPct: 1.5, maxTrades: 5, minConfidence: 65, duration: 5, useSL: true, useTP: true, autoConfirm: true };
@@ -1951,8 +1929,9 @@ async function botStart() {
     }
     if (!derivWs || derivWs.readyState !== WebSocket.OPEN) {
         toast('Connecting to Deriv...');
-        const connected = await connectDeriv();
+        const connected = await connectDerivWebSocket();
         if (!connected) { toast('Connection failed'); return; }
+        await sleep(2000);
     }
     const today = new Date().toDateString();
     if (botLastTradeDate !== today) { botDailyTrades = 0; botLastTradeDate = today; }
@@ -2048,17 +2027,32 @@ async function testGroqKey(key) {
 async function testDerivConnection() {
     const resultEl = document.getElementById('derivTestResult');
     if (resultEl) { resultEl.innerHTML = '🔍 Testing connection...'; resultEl.style.color = 'var(--sub)'; }
-    const success = await connectDeriv();
-    if (resultEl) {
-        if (success) {
-            resultEl.innerHTML = '✅ Connected! Balance: ' + derivBalance + ' ' + derivCurrency + ' | Platform: ' + (derivPlatform || 'deriv').toUpperCase();
-            resultEl.style.color = 'var(--green)';
+    
+    const success = await connectDerivWebSocket();
+    
+    if (success) {
+        // Wait for WebSocket to establish
+        await sleep(2000);
+        if (derivConnected) {
+            if (resultEl) {
+                resultEl.innerHTML = '✅ Connected! Balance: ' + derivBalance + ' ' + derivCurrency + ' | Account: ' + derivAccountType.toUpperCase();
+                resultEl.style.color = 'var(--green)';
+            }
+            return true;
         } else {
+            if (resultEl) {
+                resultEl.innerHTML = '❌ Connection failed. Check your credentials.';
+                resultEl.style.color = 'var(--red)';
+            }
+            return false;
+        }
+    } else {
+        if (resultEl) {
             resultEl.innerHTML = '❌ Connection failed. Check App ID and Token.';
             resultEl.style.color = 'var(--red)';
         }
+        return false;
     }
-    return success;
 }
 
 function saveDerivConfig() {
@@ -2137,10 +2131,7 @@ function localAI(q) {
     if (ql.includes('bot') || ql.includes('deriv')) {
         return '🤖 **Bot**: ' + (botRunning ? '🟢 RUNNING' : '🔴 STOPPED') + ' | Trades: ' + botTradeCount + ' | Daily: ' + botDailyTrades + '/' + botConfig.maxTrades;
     }
-    if (ql.includes('account')) {
-        return '📊 **Account**: ' + (derivPlatform ? derivPlatform.toUpperCase() : 'None') + ' | Type: ' + (derivAccountType || 'None') + ' | Balance: ' + derivBalance + ' ' + derivCurrency;
-    }
-    return '🤖 Ask about: forecast, weighted scoring, S/R zones, API status, account, or the bot.';
+    return '🤖 Ask about: forecast, weighted scoring, S/R zones, API status, or the bot.';
 }
 
 async function groqAI(q) {
@@ -2301,19 +2292,14 @@ document.addEventListener('DOMContentLoaded', function() {
     // Auto-connect if credentials exist
     if (derivAppId && derivApiKey) {
         setTimeout(() => {
-            connectDeriv().then(success => {
-                if (success) {
-                    addLog('✅ Auto-connected to Deriv', 'api');
-                    generateSignal();
-                }
-            });
+            connectDerivWebSocket();
         }, 1000);
     }
     
     renderSessions();
     renderJ('all');
     setInterval(renderSessions, 60000);
-    toast('🚀 Quantum Edge Pro v6 — Universal Deriv Bot ready!');
+    toast('🚀 Quantum Edge Pro v6 ready!');
     addLog('🚀 Quantum Edge Pro v6 initialized', 'info');
     addLog('🔌 Deriv: ' + (derivAppId && derivApiKey ? 'Config saved' : 'No config'), 'api');
 });
