@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>Quantum Edge Pro v5 | Deriv Auto Bot</title>
+<title>Quantum Edge Pro v6 | Universal Deriv Bot</title>
 <script src="https://s3.tradingview.com/tv.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
 <style>
@@ -157,17 +157,19 @@ select:focus,input:focus{border-color:var(--gold);}
 .sc-BUY,.sc-SCALP-LONG{background:#10b98122;color:var(--green);border:1px solid var(--green);}
 .sc-SELL,.sc-SCALP-SHORT{background:#ef444422;color:var(--red);border:1px solid var(--red);}
 .sc-HOLD{background:#f59e0b22;color:var(--gold);border:1px solid var(--gold);}
+.account-selector{background:#0a1628;border-radius:10px;padding:12px;border:1px solid var(--border);margin-bottom:12px;}
+.account-selector select{background:#080e1f;border:1px solid var(--border);border-radius:8px;padding:10px;color:var(--text);width:100%;font-size:0.85rem;}
 @media(max-width:680px){.g4,.g6{grid-template-columns:1fr 1fr;}.strat-grid{grid-template-columns:1fr 1fr;}.page{padding:14px 13px 90px;}.chart-wrap{height:260px;}.chat-modal{width:calc(100vw - 18px);right:9px;height:65vh;}.bot-config-grid{grid-template-columns:1fr;}}
 </style>
 </head>
 <body>
 
 <nav class="topnav">
-  <div class="brand"><div><h1>⚡ QUANTUM EDGE PRO <span style="font-size:0.7rem;color:var(--sub);">v5</span></h1><sub>DERIV AUTO BOT</sub></div></div>
+  <div class="brand"><div><h1>⚡ QUANTUM EDGE PRO <span style="font-size:0.7rem;color:var(--sub);">v6</span></h1><sub>UNIVERSAL DERIV BOT</sub></div></div>
   <div class="nav-right">
     <span class="pill pill-green">🔴 LIVE</span>
     <span class="pill pill-blue" id="sessionPill">⏳ SESSION</span>
-    <span class="pill pill-gold" id="dataPill">📡 SIMULATED</span>
+    <span class="pill pill-gold" id="dataPill">📡 DERIV DATA</span>
     <span class="pill pill-purple" id="strategiesPill">🧠 17 STRATEGIES</span>
     <span class="pill pill-muted" id="derivStatusPill">🔌 DERIV: OFF</span>
   </div>
@@ -181,59 +183,47 @@ select:focus,input:focus{border-color:var(--gold);}
   <button class="tab" data-tab="settings">⚙️ Settings</button>
 </div>
 
-<!-- SIGNAL PAGE - Same as before -->
+<!-- SIGNAL PAGE -->
 <div id="page-signal" class="page on">
   <div class="panel">
     <div class="ptitle">Trading Parameters</div>
     <div class="g4" style="margin-bottom:12px;">
       <div><div class="plabel">🎯 Asset</div>
         <select id="assetSel">
-          <option value="">-- Select --</option>
-          <optgroup label="Forex">
-          <option value="EURUSD">EURUSD</option>
+          <option value="EURUSD" selected>EURUSD</option>
           <option value="GBPUSD">GBPUSD</option>
           <option value="USDJPY">USDJPY</option>
           <option value="AUDUSD">AUDUSD</option>
           <option value="USDCAD">USDCAD</option>
           <option value="USDCHF">USDCHF</option>
           <option value="NZDUSD">NZDUSD</option>
-          </optgroup>
-          <optgroup label="Cryptocurrencies">
           <option value="BTCUSD">BTCUSD</option>
           <option value="ETHUSD">ETHUSD</option>
-          <option value="LTCUSD">LTCUSD</option>
-          </optgroup>
-          <optgroup label="Commodities & Indices">
           <option value="XAUUSD">XAUUSD (Gold)</option>
           <option value="XAGUSD">XAGUSD (Silver)</option>
           <option value="US30">US30</option>
           <option value="NAS100">NAS100</option>
-          </optgroup>
-          <optgroup label="Deriv Volatility">
           <option value="1HZ100V">Volatility 100</option>
           <option value="1HZ75V">Volatility 75</option>
           <option value="1HZ50V">Volatility 50</option>
-          <option value="1HZ25V">Volatility 25</option>
-          </optgroup>
         </select></div>
       <div><div class="plabel">⏱️ Timeframe</div>
         <select id="tfSel">
-          <option value="">-- Select --</option>
           <option value="1min">1 Min (Scalp)</option>
-          <option value="5min">5 Min (Scalp)</option>
+          <option value="5min" selected>5 Min (Scalp)</option>
           <option value="15min">15 Min</option>
           <option value="1h">1 Hour</option>
           <option value="4h">4 Hours</option>
           <option value="1day">Daily</option>
         </select></div>
-      <div><div class="plabel">💰 Balance ($)</div><input type="number" id="balInp" placeholder="10000" value="10000"></div>
-      <div><div class="plabel">⚠️ Risk %</div><input type="number" id="riskInp" placeholder="1" step="0.5" value="1"></div>
+      <div><div class="plabel">💰 Balance ($)</div><input type="number" id="balInp" value="10000"></div>
+      <div><div class="plabel">⚠️ Risk %</div><input type="number" id="riskInp" value="1" step="0.5"></div>
     </div>
     <div id="paramWarn" style="font-size:0.68rem;color:var(--gold);text-align:center;margin-bottom:8px;"></div>
     <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;">
-      <button class="btn btn-gold" id="genBtn" disabled>🧠 GENERATE FORECAST</button>
-      <button class="btn btn-ghost" id="autoBtn" disabled>🔄 Auto (30min)</button>
-      <button class="btn btn-ghost" id="scalpBtn" disabled>⚡ Scalp Mode</button>
+      <button class="btn btn-gold" id="genBtn">🧠 GENERATE FORECAST</button>
+      <button class="btn btn-ghost" id="autoBtn">🔄 Auto (30min)</button>
+      <button class="btn btn-ghost" id="scalpBtn">⚡ Scalp Mode</button>
     </div>
   </div>
 
@@ -277,7 +267,7 @@ select:focus,input:focus{border-color:var(--gold);}
     </div>
 
     <div class="ind-row" id="indChips"></div>
-    <div id="reasonBox" style="background:#080e1f;border-radius:10px;padding:12px;margin-top:10px;font-size:0.78rem;color:var(--sub);line-height:1.6;">Select parameters and generate a forecast.</div>
+    <div id="reasonBox" style="background:#080e1f;border-radius:10px;padding:12px;margin-top:10px;font-size:0.78rem;color:var(--sub);line-height:1.6;">Click "Generate Forecast" to start.</div>
 
     <div style="background:#1e2d4a33;border-radius:10px;padding:12px;margin-top:10px;display:flex;flex-wrap:wrap;gap:14px;">
       <span>📐 Lot: <strong id="mLot">0.00</strong></span>
@@ -311,20 +301,30 @@ select:focus,input:focus{border-color:var(--gold);}
   </div>
 
   <div class="panel"><div class="ptitle">📈 Live Chart</div><div class="chart-wrap" id="tvChart"></div></div>
-  <div class="panel"><div class="ptitle">📋 Activity Log</div><div class="logbox" id="logBox"><div style="color:var(--muted);text-align:center;padding:25px;">Set parameters to start logging</div></div></div>
+  <div class="panel"><div class="ptitle">📋 Activity Log</div><div class="logbox" id="logBox"><div style="color:var(--muted);text-align:center;padding:25px;">Generate a signal to start logging</div></div></div>
 </div>
 
 <!-- DERIV BOT PAGE -->
 <div id="page-bot" class="page">
   <div class="panel">
-    <div class="ptitle">🤖 Deriv Auto Trading Bot</div>
+    <div class="ptitle">🤖 Universal Deriv Auto Trading Bot</div>
+    
+    <div class="account-selector">
+      <div class="plabel">📊 Select Account to Trade</div>
+      <select id="accountSelect">
+        <option value="">-- Connect to see accounts --</option>
+      </select>
+      <div style="margin-top:6px;font-size:0.65rem;color:var(--sub);">Supports: cTrader Demo/Real, MT5 Demo/Real, Options Demo/Real</div>
+    </div>
+    
     <div class="deriv-status">
       <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
         <div><div class="ds-label">🔌 Status</div><div class="ds-value" id="derivConnStatus" style="color:var(--red);">DISCONNECTED</div></div>
         <div><div class="ds-label">💰 Balance</div><div class="ds-value" id="derivBalance">---</div></div>
-        <div><div class="ds-label">📊 Account</div><div class="ds-value" id="derivAccountType">---</div></div>
+        <div><div class="ds-label">📊 Account Type</div><div class="ds-value" id="derivAccountType">---</div></div>
       </div>
     </div>
+    
     <div class="bot-status">
       <span class="bot-status-dot off" id="botStatusDot"></span>
       <span id="botStatusText" style="font-weight:700;font-size:0.85rem;">Bot: STOPPED</span>
@@ -333,13 +333,14 @@ select:focus,input:focus{border-color:var(--gold);}
       <button class="btn btn-ghost btn-sm" id="botTestBtn">🔍 Test Connection</button>
       <span class="pill pill-muted" id="botTradeCount">📊 Trades: 0</span>
     </div>
+    
     <div style="background:#0a1628;border-radius:12px;padding:14px;border:1px solid var(--border);margin-bottom:12px;">
       <div style="font-size:0.6rem;color:var(--sub);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">⚙️ Bot Configuration</div>
       <div class="bot-config-grid">
         <div class="mtile"><div class="ml">Risk %</div><div class="mv"><input type="number" id="botRiskPct" value="1.5" step="0.1" min="0.1" max="5" style="width:100%;background:transparent;border:1px solid var(--border);border-radius:6px;padding:4px 8px;color:var(--text);font-family:var(--fm);font-size:0.8rem;"></div></div>
         <div class="mtile"><div class="ml">Max Daily Trades</div><div class="mv"><input type="number" id="botMaxTrades" value="5" step="1" min="1" max="20" style="width:100%;background:transparent;border:1px solid var(--border);border-radius:6px;padding:4px 8px;color:var(--text);font-family:var(--fm);font-size:0.8rem;"></div></div>
         <div class="mtile"><div class="ml">Min Confidence %</div><div class="mv"><input type="number" id="botMinConf" value="65" step="1" min="30" max="95" style="width:100%;background:transparent;border:1px solid var(--border);border-radius:6px;padding:4px 8px;color:var(--text);font-family:var(--fm);font-size:0.8rem;"></div></div>
-        <div class="mtile"><div class="ml">Duration (ticks)</div><div class="mv"><input type="number" id="botDuration" value="5" step="1" min="1" max="60" style="width:100%;background:transparent;border:1px solid var(--border);border-radius:6px;padding:4px 8px;color:var(--text);font-family:var(--fm);font-size:0.8rem;"></div></div>
+        <div class="mtile"><div class="ml">Trade Duration (ticks/sec)</div><div class="mv"><input type="number" id="botDuration" value="5" step="1" min="1" max="60" style="width:100%;background:transparent;border:1px solid var(--border);border-radius:6px;padding:4px 8px;color:var(--text);font-family:var(--fm);font-size:0.8rem;"></div></div>
       </div>
       <div style="display:flex;gap:10px;flex-wrap:wrap;font-size:0.7rem;color:var(--sub);">
         <label style="display:flex;align-items:center;gap:5px;"><input type="checkbox" id="botUseSL" checked> Use SL</label>
@@ -347,6 +348,7 @@ select:focus,input:focus{border-color:var(--gold);}
         <label style="display:flex;align-items:center;gap:5px;"><input type="checkbox" id="botAutoConfirm" checked> Auto-Confirm</label>
       </div>
     </div>
+    
     <div id="botOrderPreview" class="bot-order-preview" style="display:none;">
       <div style="font-size:0.6rem;color:var(--sub);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">📋 Pending Order</div>
       <div class="op-row"><span class="op-label">Asset</span><span class="op-value" id="botPreviewAsset">--</span></div>
@@ -354,19 +356,21 @@ select:focus,input:focus{border-color:var(--gold);}
       <div class="op-row"><span class="op-label">Entry</span><span class="op-value" id="botPreviewEntry">--</span></div>
       <div class="op-row"><span class="op-label">SL</span><span class="op-value" id="botPreviewSL">--</span></div>
       <div class="op-row"><span class="op-label">TP</span><span class="op-value" id="botPreviewTP">--</span></div>
-      <div class="op-row"><span class="op-label">Stake</span><span class="op-value" id="botPreviewStake">--</span></div>
+      <div class="op-row"><span class="op-label">Stake/Lot</span><span class="op-value" id="botPreviewStake">--</span></div>
       <div class="op-row"><span class="op-label">Duration</span><span class="op-value" id="botPreviewDuration">--</span></div>
       <div style="display:flex;gap:8px;margin-top:8px;">
         <button class="btn btn-green btn-sm" id="botExecuteBtn" style="flex:1;">✅ Execute</button>
         <button class="btn btn-ghost btn-sm" id="botCancelPreviewBtn">✕ Cancel</button>
       </div>
     </div>
+    
     <div style="display:flex;gap:10px;flex-wrap:wrap;margin:12px 0;">
       <button class="btn btn-purple btn-sm" id="botSimulateBtn">🎯 Simulate</button>
       <button class="btn btn-ghost btn-sm" id="botClearLogBtn">🗑 Clear Log</button>
     </div>
+    
     <div class="ptitle" style="margin-top:10px;">📋 Bot Log</div>
-    <div class="bot-log" id="botLogBox"><div style="color:var(--muted);text-align:center;padding:20px;">Bot stopped.</div></div>
+    <div class="bot-log" id="botLogBox"><div style="color:var(--muted);text-align:center;padding:20px;">Connect to Deriv to start.</div></div>
   </div>
 </div>
 
@@ -374,7 +378,7 @@ select:focus,input:focus{border-color:var(--gold);}
 <div id="page-terminal" class="page">
   <div class="panel">
     <div class="ptitle">🎯 Current Forecast</div>
-    <div id="execNoSignal" style="text-align:center;padding:20px;color:var(--sub);font-size:0.8rem;">No signal yet.</div>
+    <div id="execNoSignal" style="text-align:center;padding:20px;color:var(--sub);font-size:0.8rem;">No signal yet. Generate a forecast on the Signal tab.</div>
     <div id="execSignalBody" style="display:none;">
       <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:16px;padding:14px;background:#080e1f;border-radius:12px;">
         <div>
@@ -387,7 +391,7 @@ select:focus,input:focus{border-color:var(--gold);}
       </div>
       <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:14px;">
         <div class="exec-copy-tile"><div class="exec-label">Symbol</div><div class="exec-val" id="execSymbol">--</div><button class="exec-copy-btn" data-copy="execSymbol">📋 Copy</button></div>
-        <div class="exec-copy-tile"><div class="exec-label">Stake</div><div class="exec-val" id="execStake">--</div><button class="exec-copy-btn" data-copy="execStake">📋 Copy</button></div>
+        <div class="exec-copy-tile"><div class="exec-label">Stake/Lot</div><div class="exec-val" id="execStake">--</div><button class="exec-copy-btn" data-copy="execStake">📋 Copy</button></div>
         <div class="exec-copy-tile"><div class="exec-label">SL</div><div class="exec-val" id="execSL" style="color:var(--red);">--</div><button class="exec-copy-btn" data-copy="execSL">📋 Copy</button></div>
         <div class="exec-copy-tile"><div class="exec-label">TP</div><div class="exec-val" id="execTP" style="color:var(--green);">--</div><button class="exec-copy-btn" data-copy="execTP">📋 Copy</button></div>
       </div>
@@ -425,7 +429,7 @@ select:focus,input:focus{border-color:var(--gold);}
 <div id="page-settings" class="page">
   <div class="g2">
     <div class="panel">
-      <div class="ptitle">🤖 Groq AI Key</div>
+      <div class="ptitle">🤖 Groq AI Key (Optional)</div>
       <input type="password" id="groqInp" placeholder="gsk_...">
       <div style="display:flex;gap:8px;margin-top:9px;">
         <button class="btn btn-ghost btn-sm" id="saveGroqBtn">💾 Save</button>
@@ -434,42 +438,31 @@ select:focus,input:focus{border-color:var(--gold);}
       <div id="groqTestResult" style="font-size:0.68rem;margin-top:7px;color:var(--sub);"></div>
     </div>
     <div class="panel">
-      <div class="ptitle">📊 Twelve Data Key</div>
-      <input type="password" id="twelveInp" placeholder="api_key">
-      <div style="display:flex;gap:8px;margin-top:9px;">
-        <button class="btn btn-ghost btn-sm" id="saveTwelveBtn">💾 Save</button>
-        <button class="btn btn-ghost btn-sm" id="testTwelveBtn">🔍 Test</button>
+      <div class="ptitle">🔑 Deriv API Configuration</div>
+      <div style="background:#0a1628;border-radius:10px;padding:14px;border:1px solid var(--border);margin-bottom:10px;">
+        <div style="font-size:0.65rem;color:var(--sub);margin-bottom:6px;">📌 How to get your credentials:</div>
+        <ol style="font-size:0.7rem;color:var(--sub);line-height:1.8;padding-left:18px;">
+          <li>Go to <strong style="color:var(--text);">developers.deriv.com</strong> → My Apps → Create App → Copy <strong style="color:var(--gold);">App ID</strong></li>
+          <li>Go to <strong style="color:var(--text);">home.deriv.com</strong> → Settings → API Token → Create with <strong style="color:var(--green);">Trade</strong> + <strong style="color:var(--green);">Read</strong> permissions</li>
+          <li>Paste both below and click <strong style="color:var(--gold);">Test Connection</strong></li>
+        </ol>
       </div>
-      <div id="twelveTestResult" style="font-size:0.68rem;margin-top:7px;color:var(--sub);"></div>
+      <input type="text" id="derivAppId" placeholder="Your Deriv App ID" style="margin-bottom:8px;">
+      <input type="password" id="derivApiKey" placeholder="Your Deriv PAT Token" style="margin-bottom:8px;">
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <button class="btn btn-deriv btn-sm" id="saveDerivBtn">💾 Save Config</button>
+        <button class="btn btn-ghost btn-sm" id="testDerivBtn">🔍 Test Connection</button>
+      </div>
+      <div id="derivTestResult" style="font-size:0.68rem;margin-top:7px;color:var(--sub);"></div>
     </div>
-  </div>
-  <div class="panel">
-    <div class="ptitle">🔑 Deriv API Configuration</div>
-    <div style="background:#0a1628;border-radius:10px;padding:14px;border:1px solid var(--border);margin-bottom:10px;">
-      <div style="font-size:0.65rem;color:var(--sub);margin-bottom:6px;">📌 How to get your Deriv API token:</div>
-      <ol style="font-size:0.7rem;color:var(--sub);line-height:1.8;padding-left:18px;">
-        <li>Log in to <strong style="color:var(--text);">Deriv</strong> account</li>
-        <li>Go to <strong style="color:var(--text);">Deriv Developer Portal → My Apps</strong></li>
-        <li>Create an app to get your <strong style="color:var(--green);">App ID</strong></li>
-        <li>Go to Dashboard → API Token → Create token with <strong style="color:var(--green);">Trade</strong> and <strong style="color:var(--green);">Read</strong></li>
-        <li>Copy both the App ID and Token</li>
-      </ol>
-    </div>
-    <input type="text" id="derivAppId" placeholder="Your Deriv App ID" style="margin-bottom:8px;">
-    <input type="password" id="derivApiKey" placeholder="Your Deriv PAT Token" style="margin-bottom:8px;">
-    <div style="display:flex;gap:8px;flex-wrap:wrap;">
-      <button class="btn btn-deriv btn-sm" id="saveDerivBtn">💾 Save Config</button>
-      <button class="btn btn-ghost btn-sm" id="testDerivBtn">🔍 Test Connection</button>
-    </div>
-    <div id="derivTestResult" style="font-size:0.68rem;margin-top:7px;color:var(--sub);"></div>
   </div>
   <div class="panel">
     <div class="ptitle">ℹ️ About</div>
     <div style="font-size:0.78rem;color:var(--sub);line-height:1.9;">
-      <strong style="color:var(--text);">Quantum Edge Pro v5.0 — Deriv Edition</strong><br>
+      <strong style="color:var(--text);">Quantum Edge Pro v6.0 — Universal Deriv Bot</strong><br>
       <strong style="color:var(--gold);">His Grace Technologies</strong> | <strong style="color:var(--gold);">Godwin FX</strong> © 2026<br>
-      <span style="color:var(--deriv);">⚡ Built for Deriv API — Auto Trading Bot</span><br>
-      <span style="color:var(--red);">⚠️ Trading involves significant risk.</span>
+      <span style="color:var(--deriv);">⚡ Supports: cTrader, MT5, Options | Demo & Real</span><br>
+      <span style="color:var(--red);">⚠️ Trading involves significant risk. Always use stop-loss.</span>
     </div>
   </div>
 </div>
@@ -478,7 +471,7 @@ select:focus,input:focus{border-color:var(--gold);}
 <div class="fab" id="chatFab"><div class="fab-pulse"></div><span style="font-size:1.6rem;">🤖</span></div>
 <div id="chatModal" class="chat-modal hidden">
   <div class="chat-head"><h3>🤖 Quantum AI</h3><button class="chat-close" id="chatCloseBtn">✕</button></div>
-  <div class="chat-msgs" id="chatMsgs"><div class="bbl ai">👋 Ask me anything!</div></div>
+  <div class="chat-msgs" id="chatMsgs"><div class="bbl ai">👋 Ask me anything about the signals or bot!</div></div>
   <div class="qchips">
     <span class="qc" data-q="Explain the forecast">📌 Forecast</span>
     <span class="qc" data-q="What is weighted scoring?">📊 Weighted scoring</span>
@@ -492,12 +485,12 @@ select:focus,input:focus{border-color:var(--gold);}
 
 <script>
 // ============================================================
-// QUANTUM EDGE PRO v5 — DERIV AUTO BOT
-// Using the working connection method from your sample
+// QUANTUM EDGE PRO v6 — UNIVERSAL DERIV BOT
+// Uses Deriv real-time data for signals + trades ALL account types
 // ============================================================
 
 // ============================================================
-// CONFIG
+// CONFIGURATION
 // ============================================================
 const API_BASE = "https://api.derivws.com";
 let APP_ID = "";
@@ -505,36 +498,45 @@ let AUTH_TOKEN = "";
 let requestId = 1000;
 let derivWs = null;
 let derivConnected = false;
-let derivAuthenticated = false;
 let derivBalance = 0;
 let derivCurrency = "USD";
 let derivAccountId = "";
-let currentSymbol = "";
-let proposalId = null;
-let contractId = null;
+let derivAccountType = "";
+let derivPlatform = "";
+let accountList = [];
+let selectedAccount = null;
+let currentPrice = 0;
+let historicalPrices = [];
+let lastTickTime = Date.now();
+let barData = [];
 
 // ============================================================
 // STATE
 // ============================================================
 let groqKey = localStorage.getItem('qep_groq') || '';
-let twelveKey = localStorage.getItem('qep_twelve') || '';
 let derivAppId = localStorage.getItem('qep_deriv_app_id') || '';
 let derivApiKey = localStorage.getItem('qep_deriv_key') || '';
 let journal = JSON.parse(localStorage.getItem('qep_journal') || '[]');
-let curAsset='', curTf='', curBal=0, curRisk=0;
-let autoIv=null, scalpIv=null, tvW=null;
-let activeTrade=null;
-let logsOn=false;
-let curSig={signal:'HOLD',price:0,entry:0,sl:null,tp:null,conf:0,reasoning:'',asset:'',tf:'',strategy:'',confluence:0,weightedScore:0,entryType:'',entryQuality:''};
-let curMkt={price:0,rsi:50,atr:0,macd:0,vol:0,support:0,resistance:0,ema20:0,ema50:0,ema200:0,closes:[],highs:[],lows:[],allSupportZones:[],allResistanceZones:[],srZones:[]};
-let isLiveData = false;
+let curAsset = 'EURUSD';
+let curTf = '5min';
+let curBal = 10000;
+let curRisk = 1;
+let autoIv = null;
+let scalpIv = null;
+let tvW = null;
+let activeTrade = null;
+let logsOn = true;
 let botRunning = false;
 let botTradeCount = 0;
 let botDailyTrades = 0;
 let botLastTradeDate = null;
-let botLogs = [];
 let botSignalCheckInterval = null;
 let botOrderPending = false;
+let tradeMonitorIv = null;
+
+// Signal state
+let curSig = {signal:'HOLD', price:0, entry:0, sl:null, tp:null, conf:0, reasoning:'', asset:'', tf:'', strategy:'', confluence:0, weightedScore:0, entryType:'', entryQuality:''};
+let curMkt = {price:0, rsi:50, atr:0, macd:0, vol:0, support:0, resistance:0, ema20:0, ema50:0, ema200:0, closes:[], highs:[], lows:[], allSupportZones:[], allResistanceZones:[], srZones:[]};
 
 // ============================================================
 // TOAST & HELPERS
@@ -542,6 +544,7 @@ let botOrderPending = false;
 function toast(m){const t=document.createElement('div');t.className='toast';t.textContent=m;document.body.appendChild(t);setTimeout(()=>t.remove(),2700);}
 function fp(asset,val,dp){ if(val===null||val===undefined) return '---'; const v=parseFloat(val); if(['BTCUSD','ETHUSD','LTCUSD'].includes(asset)) return '$'+v.toFixed(2); if(['USDJPY','EURJPY'].includes(asset)) return v.toFixed(3); if(['XAUUSD','XAGUSD','US30','NAS100'].includes(asset)) return v.toFixed(2); return v.toFixed(dp||5); }
 function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
+function generateId(){return Date.now().toString(36)+Math.random().toString(36).substr(2,5);}
 
 function botLog(msg,type='bot-info'){
   const box=document.getElementById('botLogBox');
@@ -553,12 +556,10 @@ function botLog(msg,type='bot-info'){
   box.appendChild(d);
   box.scrollTop=box.scrollHeight;
   while(box.children.length>200) box.removeChild(box.firstChild);
-  botLogs.push({time:new Date(),msg,type});
   addLog('🤖 '+msg, type==='bot-error'?'error':type==='bot-warn'?'warn':'bot');
 }
 
 function addLog(msg,type='info'){
-  if(!logsOn && type!=='api' && type!=='bot') return;
   const box=document.getElementById('logBox');
   if(!box) return;
   if(box.querySelector('[style*="muted"]')) box.innerHTML='';
@@ -571,12 +572,12 @@ function addLog(msg,type='info'){
 }
 
 // ============================================================
-// DERIV CONNECTION (Using your working method)
+// DERIV CONNECTION — UNIVERSAL (Supports all account types)
 // ============================================================
 
 async function getDerivAccounts() {
     const response = await fetch(
-        `${API_BASE}/trading/v1/options/accounts`,
+        `${API_BASE}/trading/v1/accounts`,
         {
             method: "GET",
             headers: {
@@ -595,7 +596,7 @@ async function getDerivAccounts() {
 
 async function getDerivOTP(accountId) {
     const response = await fetch(
-        `${API_BASE}/trading/v1/options/accounts/${accountId}/otp`,
+        `${API_BASE}/trading/v1/accounts/${accountId}/otp`,
         {
             method: "POST",
             headers: {
@@ -606,101 +607,131 @@ async function getDerivOTP(accountId) {
     );
     const result = await response.json();
     if (!response.ok) {
-        throw new Error(result?.errors?.[0]?.message || `OTP request failed: HTTP ${response.status}`);
+        throw new Error(result?.errors?.[0]?.message || `OTP failed: HTTP ${response.status}`);
     }
     if (!result.data?.url) {
-        throw new Error("Deriv did not return a WebSocket URL.");
+        throw new Error("No WebSocket URL returned");
     }
     return result.data.url;
 }
 
+function getDerivSymbol(asset) {
+    const map = {
+        'EURUSD': 'frxEURUSD', 'GBPUSD': 'frxGBPUSD', 'USDJPY': 'frxUSDJPY',
+        'AUDUSD': 'frxAUDUSD', 'USDCAD': 'frxUSDCAD', 'USDCHF': 'frxUSDCHF',
+        'NZDUSD': 'frxNZDUSD', 'BTCUSD': 'cryBTCUSD', 'ETHUSD': 'cryETHUSD',
+        'LTCUSD': 'cryLTCUSD', 'XAUUSD': 'comXAUUSD', 'XAGUSD': 'comXAGUSD',
+        'US30': 'idxUS30', 'NAS100': 'idxNAS100',
+        '1HZ100V': '1HZ100V', '1HZ75V': '1HZ75V', '1HZ50V': '1HZ50V', '1HZ25V': '1HZ25V'
+    };
+    return map[asset] || asset;
+}
+
 async function connectDeriv() {
-    APP_ID = document.getElementById('derivAppId')?.value?.trim() || '';
-    AUTH_TOKEN = document.getElementById('derivApiKey')?.value?.trim() || '';
+    APP_ID = document.getElementById('derivAppId')?.value?.trim() || derivAppId;
+    AUTH_TOKEN = document.getElementById('derivApiKey')?.value?.trim() || derivApiKey;
     
     if (!APP_ID || !AUTH_TOKEN) {
         toast('⚠️ Enter both App ID and API Token');
         return false;
     }
     
-    // Save config
-    derivAppId = APP_ID;
-    derivApiKey = AUTH_TOKEN;
-    localStorage.setItem('qep_deriv_app_id', APP_ID);
-    localStorage.setItem('qep_deriv_key', AUTH_TOKEN);
-    
     try {
         botLog('🔍 Getting Deriv accounts...', 'bot-info');
         const accounts = await getDerivAccounts();
         
         if (!accounts || accounts.length === 0) {
-            botLog('❌ No accounts found. Make sure you have a demo account.', 'bot-error');
+            botLog('❌ No accounts found. Please create a demo account first.', 'bot-error');
             return false;
         }
         
-        // Find a demo Options account
-        const demoAccount = accounts.find(a => a.account_type === 'demo');
-        if (!demoAccount) {
-            botLog('❌ No demo Options account found. Create one first.', 'bot-error');
-            return false;
+        accountList = accounts;
+        
+        // Populate account selector
+        const select = document.getElementById('accountSelect');
+        select.innerHTML = '';
+        accounts.forEach(acc => {
+            const option = document.createElement('option');
+            option.value = acc.account_id;
+            const type = acc.account_type || 'unknown';
+            const platform = acc.platform || 'deriv';
+            const isDemo = type === 'demo';
+            option.textContent = `${platform.toUpperCase()} ${isDemo ? 'Demo' : 'Real'} | ${acc.account_id} | ${acc.balance || 0} ${acc.currency || 'USD'}`;
+            select.appendChild(option);
+        });
+        
+        // Select first demo account by default, or first available
+        const defaultAccount = accounts.find(a => a.account_type === 'demo') || accounts[0];
+        if (defaultAccount) {
+            select.value = defaultAccount.account_id;
+            selectedAccount = defaultAccount;
         }
         
-        derivAccountId = demoAccount.account_id;
-        derivCurrency = demoAccount.currency || 'USD';
-        derivBalance = demoAccount.balance || 0;
-        
-        botLog(`✅ Found account: ${derivAccountId} | Balance: ${derivBalance} ${derivCurrency}`, 'bot-success');
-        document.getElementById('derivBalance').textContent = `${derivBalance} ${derivCurrency}`;
-        document.getElementById('derivAccountType').textContent = 'DEMO';
-        
-        // Get OTP and connect WebSocket
-        botLog('🔌 Getting WebSocket OTP...', 'bot-info');
-        const wsUrl = await getDerivOTP(derivAccountId);
-        
-        botLog('🔌 Connecting WebSocket...', 'bot-info');
-        derivWs = new WebSocket(wsUrl);
-        
-        derivWs.onopen = function() {
-            botLog('✅ WebSocket connected!', 'bot-success');
-            derivConnected = true;
-            updateDerivStatus('connected');
-            document.getElementById('derivConnStatus').textContent = 'CONNECTED';
-            document.getElementById('derivConnStatus').style.color = 'var(--green)';
-            
-            // Request balance
-            sendDerivRequest({ balance: 1, subscribe: 1 });
-            
-            // Subscribe to ticks for the selected symbol
-            const symbol = document.getElementById('assetSel')?.value || '1HZ100V';
-            if (symbol) {
-                sendDerivRequest({ ticks: symbol, subscribe: 1 });
+        select.onchange = function() {
+            selectedAccount = accounts.find(a => a.account_id === this.value);
+            if (selectedAccount) {
+                derivAccountId = selectedAccount.account_id;
+                derivCurrency = selectedAccount.currency || 'USD';
+                derivBalance = selectedAccount.balance || 0;
+                derivAccountType = selectedAccount.account_type || 'unknown';
+                derivPlatform = selectedAccount.platform || 'deriv';
+                document.getElementById('derivBalance').textContent = `${derivBalance} ${derivCurrency}`;
+                document.getElementById('derivAccountType').textContent = `${derivPlatform.toUpperCase()} ${derivAccountType.toUpperCase()}`;
+                botLog(`📊 Selected: ${derivPlatform.toUpperCase()} ${derivAccountType.toUpperCase()} | Balance: ${derivBalance} ${derivCurrency}`, 'bot-success');
             }
         };
         
-        derivWs.onmessage = function(event) {
-            try {
-                const data = JSON.parse(event.data);
-                handleDerivMessage(data);
-            } catch(e) {}
-        };
+        // Trigger initial selection
+        select.onchange();
         
-        derivWs.onerror = function(error) {
-            botLog('❌ WebSocket error', 'bot-error');
-            updateDerivStatus('error');
-        };
+        // Connect WebSocket
+        if (selectedAccount) {
+            const wsUrl = await getDerivOTP(selectedAccount.account_id);
+            botLog('🔌 Connecting WebSocket...', 'bot-info');
+            
+            derivWs = new WebSocket(wsUrl);
+            
+            derivWs.onopen = function() {
+                botLog('✅ WebSocket connected!', 'bot-success');
+                derivConnected = true;
+                updateDerivStatus('connected');
+                document.getElementById('derivConnStatus').textContent = 'CONNECTED';
+                document.getElementById('derivConnStatus').style.color = 'var(--green)';
+                
+                // Request balance
+                sendDerivRequest({ balance: 1, subscribe: 1 });
+                
+                // Subscribe to ticks for the selected symbol
+                const symbol = document.getElementById('assetSel')?.value || 'EURUSD';
+                const derivSymbol = getDerivSymbol(symbol);
+                sendDerivRequest({ ticks: derivSymbol, subscribe: 1 });
+            };
+            
+            derivWs.onmessage = function(event) {
+                try {
+                    const data = JSON.parse(event.data);
+                    handleDerivMessage(data);
+                } catch(e) {}
+            };
+            
+            derivWs.onerror = function(error) {
+                botLog('❌ WebSocket error', 'bot-error');
+                updateDerivStatus('error');
+            };
+            
+            derivWs.onclose = function() {
+                botLog('🔌 WebSocket disconnected', 'bot-warn');
+                derivConnected = false;
+                updateDerivStatus('off');
+                document.getElementById('derivConnStatus').textContent = 'DISCONNECTED';
+                document.getElementById('derivConnStatus').style.color = 'var(--red)';
+            };
+            
+            await sleep(2000);
+            return true;
+        }
         
-        derivWs.onclose = function() {
-            botLog('🔌 WebSocket disconnected', 'bot-warn');
-            derivConnected = false;
-            derivAuthenticated = false;
-            updateDerivStatus('off');
-            document.getElementById('derivConnStatus').textContent = 'DISCONNECTED';
-            document.getElementById('derivConnStatus').style.color = 'var(--red)';
-        };
-        
-        // Wait for connection
-        await sleep(2000);
-        return true;
+        return false;
         
     } catch (error) {
         botLog(`❌ Connection failed: ${error.message}`, 'bot-error');
@@ -717,33 +748,63 @@ function handleDerivMessage(data) {
         return;
     }
     
-    // Tick update
+    // Tick update - REAL TIME DATA!
     if (data.msg_type === 'tick') {
         const price = data.tick.quote;
-        curMkt.price = price;
+        currentPrice = price;
+        
+        // Store for indicator calculation
+        historicalPrices.push(price);
+        if (historicalPrices.length > 500) historicalPrices.shift();
+        
+        // Update UI with real-time price
         document.getElementById('fCurrentPrice').textContent = fp(curAsset, price);
-        // Update chart or other UI elements
+        
+        // If we have a signal, check entry proximity
+        if (curSig && curSig.signal !== 'HOLD' && curSig.entry) {
+            const dist = Math.abs(price - curSig.entry);
+            const maxDist = Math.abs(curSig.sl - curSig.entry) * 2 || 1;
+            const pct = Math.min(100, Math.round((1 - dist / maxDist) * 100));
+            const progFill = document.getElementById('entryProgressFill');
+            if (progFill) progFill.style.width = pct + '%';
+            const fDist = document.getElementById('fDistance');
+            if (fDist) fDist.textContent = fp(curAsset, dist);
+            const badge = document.getElementById('entryStatusBadge');
+            if (badge) {
+                if (dist < Math.abs(curSig.entry - curSig.sl) * 0.3) {
+                    badge.textContent = '✅ READY TO EXECUTE';
+                    badge.className = 'entry-status-badge es-ready';
+                } else {
+                    badge.textContent = '⏳ WAITING (' + pct + '% to entry)';
+                    badge.className = 'entry-status-badge es-waiting';
+                }
+            }
+        }
+        
+        // Update indicators if we have enough data
+        if (historicalPrices.length > 50) {
+            updateIndicators(historicalPrices);
+        }
+        
         return;
     }
     
     // Proposal response
     if (data.msg_type === 'proposal') {
-        proposalId = data.proposal.id;
-        const askPrice = data.proposal.ask_price;
-        botLog(`📊 Proposal: ID ${proposalId} | Price: ${askPrice}`, 'bot-info');
-        // Store proposal data for execution
         if (window._pendingProposal) {
             window._pendingProposal.resolve(data.proposal);
+            window._pendingProposal = null;
         }
         return;
     }
     
-    // Buy response
-    if (data.msg_type === 'buy') {
-        contractId = data.buy.contract_id;
-        botLog(`✅ Contract purchased! ID: ${contractId}`, 'bot-success');
-        if (window._pendingBuy) {
-            window._pendingBuy.resolve(data.buy);
+    // Buy/Sell response
+    if (data.msg_type === 'buy' || data.msg_type === 'sell') {
+        const contract = data.buy || data.sell;
+        botLog(`✅ Contract executed! ID: ${contract.contract_id}`, 'bot-success');
+        if (window._pendingTrade) {
+            window._pendingTrade.resolve(contract);
+            window._pendingTrade = null;
         }
         return;
     }
@@ -753,9 +814,11 @@ function handleDerivMessage(data) {
         botLog(`❌ API Error: ${data.error.message}`, 'bot-error');
         if (window._pendingProposal) {
             window._pendingProposal.reject(new Error(data.error.message));
+            window._pendingProposal = null;
         }
-        if (window._pendingBuy) {
-            window._pendingBuy.reject(new Error(data.error.message));
+        if (window._pendingTrade) {
+            window._pendingTrade.reject(new Error(data.error.message));
+            window._pendingTrade = null;
         }
         return;
     }
@@ -792,12 +855,10 @@ function sendDerivRequestWithPromise(message) {
         };
         derivWs.addEventListener('message', handler);
         derivWs.send(JSON.stringify(message));
-        
-        // Timeout
         setTimeout(() => {
             derivWs.removeEventListener('message', handler);
             reject(new Error('Request timeout'));
-        }, 10000);
+        }, 15000);
     });
 }
 
@@ -813,20 +874,314 @@ function updateDerivStatus(status) {
 }
 
 // ============================================================
-// DERIV TRADE EXECUTION
+// INDICATOR CALCULATIONS (Using Deriv real-time data)
 // ============================================================
 
-function getDerivSymbol(asset) {
-    const map = {
-        'EURUSD': 'frxEURUSD', 'GBPUSD': 'frxGBPUSD', 'USDJPY': 'frxUSDJPY',
-        'AUDUSD': 'frxAUDUSD', 'USDCAD': 'frxUSDCAD', 'USDCHF': 'frxUSDCHF',
-        'NZDUSD': 'frxNZDUSD', 'BTCUSD': 'cryBTCUSD', 'ETHUSD': 'cryETHUSD',
-        'LTCUSD': 'cryLTCUSD', 'XAUUSD': 'comXAUUSD', 'XAGUSD': 'comXAGUSD',
-        'US30': 'idxUS30', 'NAS100': 'idxNAS100',
-        '1HZ100V': '1HZ100V', '1HZ75V': '1HZ75V', '1HZ50V': '1HZ50V', '1HZ25V': '1HZ25V'
+function updateIndicators(prices) {
+    if (prices.length < 20) return;
+    
+    const n = prices.length;
+    const lastPrice = prices[n-1];
+    
+    // Calculate RSI (14 periods)
+    let gains = 0, losses = 0;
+    for (let i = n - 15; i < n - 1; i++) {
+        const diff = prices[i+1] - prices[i];
+        if (diff >= 0) gains += diff;
+        else losses -= diff;
+    }
+    const rs = (gains/14) / ((losses/14) || 0.001);
+    const rsi = parseFloat((100 - 100/(1+rs)).toFixed(1));
+    
+    // Calculate ATR (14 periods)
+    let tr = [];
+    for (let i = n - 15; i < n - 1; i++) {
+        const high = Math.max(prices[i], prices[i+1]);
+        const low = Math.min(prices[i], prices[i+1]);
+        tr.push(high - low);
+    }
+    let atr = tr.reduce((a,b) => a+b, 0) / (tr.length || 1);
+    
+    // Calculate EMAs
+    const ema = (arr, period) => {
+        const len = arr.length;
+        if (len < period) return arr[len-1] || 0;
+        let k = 2 / (period + 1);
+        let e = arr.slice(0, period).reduce((a,b) => a+b, 0) / period;
+        for (let i = period; i < len; i++) {
+            e = arr[i] * k + e * (1 - k);
+        }
+        return e;
     };
-    return map[asset] || asset;
+    
+    const ema20 = ema(prices, 20);
+    const ema50 = ema(prices, 50);
+    const ema200 = ema(prices, 200);
+    
+    // Simple support/resistance from recent highs/lows
+    const recentHigh = Math.max(...prices.slice(-20));
+    const recentLow = Math.min(...prices.slice(-20));
+    
+    // Find support/resistance zones
+    const srZones = [];
+    const zoneTolerance = atr * 0.3 || 0.001;
+    for (let i = 2; i < n - 2; i++) {
+        if (prices[i] > prices[i-1] && prices[i] > prices[i-2] && prices[i] > prices[i+1] && prices[i] > prices[i+2]) {
+            srZones.push({level: prices[i], type: 'resistance', tests: 1});
+        }
+        if (prices[i] < prices[i-1] && prices[i] < prices[i-2] && prices[i] < prices[i+1] && prices[i] < prices[i+2]) {
+            srZones.push({level: prices[i], type: 'support', tests: 1});
+        }
+    }
+    
+    // Merge nearby zones
+    const merged = [];
+    srZones.forEach(z => {
+        let found = false;
+        for (let m of merged) {
+            if (Math.abs(m.level - z.level) < zoneTolerance) {
+                m.level = (m.level * m.tests + z.level) / (m.tests + 1);
+                m.tests++;
+                found = true;
+                break;
+            }
+        }
+        if (!found) merged.push({...z});
+    });
+    
+    const supportZones = merged.filter(z => z.type === 'support' && z.level < lastPrice).sort((a,b) => b.tests - a.tests);
+    const resistanceZones = merged.filter(z => z.type === 'resistance' && z.level > lastPrice).sort((a,b) => b.tests - a.tests);
+    const support = supportZones.length ? supportZones[0].level : recentLow;
+    const resistance = resistanceZones.length ? resistanceZones[0].level : recentHigh;
+    
+    // Determine market structure
+    const structure = lastPrice > ema50 ? 'BULLISH' : lastPrice < ema50 ? 'BEARISH' : 'RANGING';
+    
+    // Store in market data
+    curMkt = {
+        price: lastPrice,
+        rsi: rsi,
+        atr: atr,
+        macd: ema20 - ema50,
+        vol: 0,
+        support: support,
+        resistance: resistance,
+        ema20: ema20,
+        ema50: ema50,
+        ema200: ema200,
+        closes: prices.slice(-50),
+        highs: prices.slice(-50),
+        lows: prices.slice(-50),
+        allSupportZones: supportZones,
+        allResistanceZones: resistanceZones,
+        srZones: merged.filter(z => z.tests >= 2)
+    };
+    
+    // Update UI indicators
+    const rsiEl = document.getElementById('mRSI');
+    if (rsiEl) rsiEl.textContent = rsi;
+    const atrEl = document.getElementById('mATR');
+    if (atrEl) atrEl.textContent = fp(curAsset, atr);
+    const emaEl = document.getElementById('mEMA');
+    if (emaEl) {
+        emaEl.textContent = lastPrice > ema50 ? '▲ BULL' : '▼ BEAR';
+        emaEl.style.color = lastPrice > ema50 ? 'var(--green)' : 'var(--red)';
+    }
+    const structEl = document.getElementById('mStruct');
+    if (structEl) {
+        structEl.textContent = structure;
+        structEl.style.color = structure === 'BULLISH' ? 'var(--green)' : structure === 'BEARISH' ? 'var(--red)' : 'var(--gold)';
+    }
 }
+
+// ============================================================
+// STRATEGY ENGINE (Using Deriv data)
+// ============================================================
+
+function runAllStrategies(d, isScalp) {
+    const {price, rsi, macd, support, resistance, atr, ema20, ema50, ema200, structure,
+           allSupportZones, allResistanceZones, closes, highs, lows} = d;
+    
+    const votes = [];
+    function addStrat(name, icon, signal, conf, reason) {
+        votes.push({name, icon, signal, conf, reason});
+    }
+    
+    // EMA Trend
+    const emaBull = price > ema20 && ema20 > ema50 && macd > 0;
+    const emaBear = price < ema20 && ema20 < ema50 && macd < 0;
+    addStrat('EMA Trend', '📈', emaBull ? 'BUY' : emaBear ? 'SELL' : 'HOLD', emaBull || emaBear ? 72 : 30, 'EMA trend');
+    
+    // S/R Bounce
+    const dSup = Math.abs(price - support) / (atr || 0.001);
+    const dRes = Math.abs(resistance - price) / (atr || 0.001);
+    const srBull = rsi < 42 && dSup < 0.6;
+    const srBear = rsi > 58 && dRes < 0.6;
+    addStrat('S/R Bounce', '🏀', srBull ? 'BUY' : srBear ? 'SELL' : 'HOLD', srBull || srBear ? 74 : 28, 'S/R bounce');
+    
+    // RSI
+    addStrat('RSI', '🔄', rsi < 32 ? 'BUY' : rsi > 68 ? 'SELL' : 'HOLD', rsi < 32 || rsi > 68 ? 67 : 25, 'RSI ' + rsi);
+    
+    // Market Structure
+    addStrat('Structure', '🏗️', structure === 'BULLISH' ? 'BUY' : structure === 'BEARISH' ? 'SELL' : 'HOLD', 68, 'Structure');
+    
+    // Multi-TF
+    const mtfBull = price > ema200 && ema50 > ema200;
+    const mtfBear = price < ema200 && ema50 < ema200;
+    addStrat('Multi-TF', '📐', mtfBull ? 'BUY' : mtfBear ? 'SELL' : 'HOLD', mtfBull || mtfBear ? 73 : 30, 'Multi-TF');
+    
+    // Support Zone Test
+    const nearSupport = allSupportZones && allSupportZones.length > 0 && Math.abs(price - allSupportZones[0].level) / (atr || 0.001) < 0.5;
+    const nearResistance = allResistanceZones && allResistanceZones.length > 0 && Math.abs(allResistanceZones[0].level - price) / (atr || 0.001) < 0.5;
+    addStrat('S/R Zone', '📍', nearSupport ? 'BUY' : nearResistance ? 'SELL' : 'HOLD', nearSupport || nearResistance ? 76 : 25, 'S/R zone');
+    
+    // Momentum
+    const mom = macd > 0 ? 'BUY' : macd < 0 ? 'SELL' : 'HOLD';
+    addStrat('Momentum', '⚡', mom, Math.abs(macd) > 0.001 ? 65 : 30, 'MACD');
+    
+    // Candle pattern detection
+    if (closes && closes.length > 5) {
+        const n = closes.length;
+        const body = Math.abs(closes[n-1] - closes[n-2]);
+        const range = highs[n-1] - lows[n-1] || 0.001;
+        const isBull = closes[n-1] > closes[n-2];
+        const isBear = closes[n-1] < closes[n-2];
+        const isDoji = body / range < 0.1 && range > atr * 0.3;
+        let pattern = 'Neutral';
+        let bias = 'neutral';
+        let strength = 0;
+        
+        if (isDoji) { pattern = 'Doji'; bias = 'neutral'; strength = 55; }
+        else if (n > 3 && isBear && isBull && closes[n-1] > closes[n-3]) { pattern = 'Bull Engulfing'; bias = 'bull'; strength = 82; }
+        else if (n > 3 && isBull && isBear && closes[n-1] < closes[n-3]) { pattern = 'Bear Engulfing'; bias = 'bear'; strength = 82; }
+        else if (isBull && body > atr * 0.5) { pattern = 'Bull Candle'; bias = 'bull'; strength = 60; }
+        else if (isBear && body > atr * 0.5) { pattern = 'Bear Candle'; bias = 'bear'; strength = 60; }
+        
+        addStrat('Candle', '🕯️', bias === 'bull' ? 'BUY' : bias === 'bear' ? 'SELL' : 'HOLD', strength, pattern);
+    }
+    
+    return votes;
+}
+
+function aiChooseStrategy(votes) {
+    const total = votes.length;
+    let buySum = 0, buyCount = 0, sellSum = 0, sellCount = 0;
+    let buyConfluence = 0, sellConfluence = 0;
+    
+    votes.forEach(v => {
+        if (v.signal === 'BUY' || v.signal === 'SCALP-LONG') {
+            buySum += v.conf;
+            buyCount++;
+            buyConfluence += v.conf * v.conf / 100;
+        } else if (v.signal === 'SELL' || v.signal === 'SCALP-SHORT') {
+            sellSum += v.conf;
+            sellCount++;
+            sellConfluence += v.conf * v.conf / 100;
+        }
+    });
+    
+    const buyAvg = buyCount ? buySum / buyCount : 0;
+    const sellAvg = sellCount ? sellSum / sellCount : 0;
+    const buyWeighted = buyCount ? buyConfluence / buyCount : 0;
+    const sellWeighted = sellCount ? sellConfluence / sellCount : 0;
+    
+    let signal = 'HOLD';
+    let conf = 25;
+    let strategy = 'NEUTRAL';
+    let reasoning = '';
+    
+    if (buyWeighted > sellWeighted && buyWeighted > 30) {
+        signal = 'BUY';
+        conf = Math.min(95, Math.round(buyWeighted + buyCount * 2));
+        strategy = `BUY (${buyCount}/${total})`;
+        reasoning = `${buyCount} BUY, ${sellCount} SELL. BUY favored.`;
+    } else if (sellWeighted > buyWeighted && sellWeighted > 30) {
+        signal = 'SELL';
+        conf = Math.min(95, Math.round(sellWeighted + sellCount * 2));
+        strategy = `SELL (${sellCount}/${total})`;
+        reasoning = `${sellCount} SELL, ${buyCount} BUY. SELL favored.`;
+    } else {
+        signal = 'HOLD';
+        conf = Math.max(15, Math.round((buyWeighted + sellWeighted) / 2));
+        strategy = 'CONFLICTED';
+        reasoning = `Mixed: BUY avg ${Math.round(buyAvg)}%, SELL avg ${Math.round(sellAvg)}%`;
+    }
+    
+    const confluence = Math.max(buyCount, sellCount);
+    return {signal, conf, strategy, reasoning, confluence, buyCount, sellCount, totalStrats: total, weightedScore: conf};
+}
+
+function calcForecastEntry(signal, d) {
+    const price = d.price;
+    const atr = d.atr || 0.001;
+    const isBuy = signal === 'BUY' || signal === 'SCALP-LONG';
+    const isSell = signal === 'SELL' || signal === 'SCALP-SHORT';
+    
+    let entry = price;
+    let sl = null;
+    let tp = null;
+    let entryType = 'Market';
+    let quality = 'MARKET';
+    
+    if (isBuy) {
+        const bestSup = d.allSupportZones && d.allSupportZones.length > 0 
+            ? d.allSupportZones.filter(z => z.level < price - atr * 0.2).sort((a,b) => b.tests - a.tests)
+            : [];
+        if (bestSup.length > 0) {
+            const z = bestSup[0];
+            entry = z.level + atr * 0.1;
+            sl = z.level - atr * 0.2;
+            entryType = `Support (${z.tests}x tested)`;
+            quality = z.tests >= 5 ? 'ELITE' : z.tests >= 4 ? 'STRONG' : 'SOLID';
+            const riskDistance = entry - sl;
+            tp = entry + (riskDistance * 3);
+        } else {
+            entry = price - atr * 0.8;
+            sl = entry - atr * 1.0;
+            const riskDistance = entry - sl;
+            tp = entry + (riskDistance * 3);
+            entryType = 'ATR Fallback';
+        }
+    } else if (isSell) {
+        const bestRes = d.allResistanceZones && d.allResistanceZones.length > 0
+            ? d.allResistanceZones.filter(z => z.level > price + atr * 0.2).sort((a,b) => b.tests - a.tests)
+            : [];
+        if (bestRes.length > 0) {
+            const z = bestRes[0];
+            entry = z.level - atr * 0.1;
+            sl = z.level + atr * 0.2;
+            entryType = `Resistance (${z.tests}x tested)`;
+            quality = z.tests >= 5 ? 'ELITE' : z.tests >= 4 ? 'STRONG' : 'SOLID';
+            const riskDistance = sl - entry;
+            tp = entry - (riskDistance * 3);
+        } else {
+            entry = price + atr * 0.8;
+            sl = entry + atr * 1.0;
+            const riskDistance = sl - entry;
+            tp = entry - (riskDistance * 3);
+            entryType = 'ATR Fallback';
+        }
+    }
+    
+    entry = Math.max(price - atr * 3, Math.min(price + atr * 3, entry));
+    if (isBuy) {
+        sl = Math.min(entry - atr * 0.2, sl || entry - atr * 1.0);
+        tp = Math.max(entry + atr * 2.0, tp || entry + atr * 3.0);
+    } else if (isSell) {
+        sl = Math.max(entry + atr * 0.2, sl || entry + atr * 1.0);
+        tp = Math.min(entry - atr * 2.0, tp || entry - atr * 3.0);
+    }
+    
+    const risk = Math.abs(entry - sl);
+    const reward = Math.abs(tp - entry);
+    const rr = risk > 0 ? (reward / risk).toFixed(1) : '0';
+    
+    return {entry, sl, tp, entryType, quality, rr, risk, reward};
+}
+
+// ============================================================
+// TRADE EXECUTION — UNIVERSAL (Supports all account types)
+// ============================================================
 
 async function executeDerivTrade(signal, entry, sl, tp, confidence) {
     if (!derivWs || derivWs.readyState !== WebSocket.OPEN) {
@@ -834,47 +1189,706 @@ async function executeDerivTrade(signal, entry, sl, tp, confidence) {
     }
     
     const symbol = getDerivSymbol(curAsset);
-    const isCall = signal === 'BUY' || signal === 'SCALP-LONG';
-    const duration = parseInt(document.getElementById('botDuration')?.value) || 5;
-    const stake = Math.min(curBal * (botConfig.riskPct / 100), 1000);
+    const isBuy = signal === 'BUY' || signal === 'SCALP-LONG';
+    const platform = derivPlatform || 'deriv';
+    const accountType = derivAccountType || 'demo';
     
-    botLog(`📊 Trade: ${symbol} ${isCall ? 'CALL' : 'PUT'} | Stake: $${stake.toFixed(2)} | Duration: ${duration}s`, 'bot-info');
+    // Determine trade type based on platform
+    const isOptions = platform === 'deriv_options' || platform === 'options';
+    const isCfd = platform === 'ctrader' || platform === 'mt5' || !isOptions;
     
+    botLog(`📊 Platform: ${platform} | Type: ${isOptions ? 'Options' : 'CFD'}`, 'bot-info');
+    
+    if (isOptions) {
+        // OPTIONS TRADE
+        const duration = parseInt(document.getElementById('botDuration')?.value) || 5;
+        const stake = Math.min(curBal * (botConfig.riskPct / 100), 1000);
+        botLog(`📊 Options: ${symbol} ${isBuy ? 'CALL' : 'PUT'} | Stake: $${stake.toFixed(2)}`, 'bot-info');
+        
+        try {
+            window._pendingProposal = { resolve: null, reject: null };
+            const proposalPromise = new Promise((resolve, reject) => {
+                window._pendingProposal.resolve = resolve;
+                window._pendingProposal.reject = reject;
+            });
+            
+            sendDerivRequest({
+                proposal: 1,
+                amount: stake,
+                basis: 'stake',
+                contract_type: isBuy ? 'CALL' : 'PUT',
+                currency: derivCurrency || 'USD',
+                duration: duration,
+                duration_unit: 's',
+                symbol: symbol
+            });
+            
+            const proposal = await proposalPromise;
+            botLog(`📊 Proposal received: ${proposal.display_value}`, 'bot-info');
+            
+            window._pendingTrade = { resolve: null, reject: null };
+            const tradePromise = new Promise((resolve, reject) => {
+                window._pendingTrade.resolve = resolve;
+                window._pendingTrade.reject = reject;
+            });
+            
+            sendDerivRequest({
+                buy: proposal.id,
+                price: proposal.ask_price
+            });
+            
+            const result = await tradePromise;
+            botLog(`✅ Options trade executed! Contract: ${result.contract_id}`, 'bot-success');
+            
+            return { success: true, contractId: result.contract_id, platform: 'options' };
+            
+        } catch (error) {
+            botLog(`❌ Options trade error: ${error.message}`, 'bot-error');
+            return { success: false, error: error.message };
+        }
+        
+    } else {
+        // CFD TRADE (cTrader, MT5)
+        const volume = calculateLotSize(entry, sl, derivBalance, botConfig.riskPct);
+        botLog(`📊 CFD: ${symbol} ${isBuy ? 'BUY' : 'SELL'} | Volume: ${volume}`, 'bot-info');
+        
+        try {
+            window._pendingTrade = { resolve: null, reject: null };
+            const tradePromise = new Promise((resolve, reject) => {
+                window._pendingTrade.resolve = resolve;
+                window._pendingTrade.reject = reject;
+            });
+            
+            const tradeMsg = isBuy ? {
+                buy: 1,
+                symbol: symbol,
+                volume: volume,
+                type: 'market',
+                stop_loss: sl || undefined,
+                take_profit: tp || undefined
+            } : {
+                sell: 1,
+                symbol: symbol,
+                volume: volume,
+                type: 'market',
+                stop_loss: sl || undefined,
+                take_profit: tp || undefined
+            };
+            
+            sendDerivRequest(tradeMsg);
+            const result = await tradePromise;
+            botLog(`✅ CFD trade executed! Contract: ${result.contract_id}`, 'bot-success');
+            
+            // Open in trade manager
+            openTrade(signal, entry, sl, tp, curAsset, curTf, volume);
+            
+            return { success: true, contractId: result.contract_id, platform: 'cfd' };
+            
+        } catch (error) {
+            botLog(`❌ CFD trade error: ${error.message}`, 'bot-error');
+            return { success: false, error: error.message };
+        }
+    }
+}
+
+function calculateLotSize(entry, sl, balance, riskPct) {
+    if (!sl || !entry) return 0.01;
+    
+    const riskAmount = balance * (riskPct / 100);
+    const pipDistance = Math.abs(entry - sl);
+    
+    let pipValue = 1;
+    if (curAsset === 'XAUUSD') pipValue = 100;
+    else if (curAsset === 'BTCUSD') pipValue = 1;
+    else if (curAsset === 'USDJPY' || curAsset === 'EURJPY' || curAsset === 'GBPJPY') pipValue = 1000;
+    else pipValue = 10000;
+    
+    let lot = riskAmount / (pipDistance * pipValue);
+    lot = Math.min(10, Math.max(0.01, parseFloat(lot.toFixed(2))));
+    
+    return lot;
+}
+
+// ============================================================
+// TRADE MANAGER
+// ============================================================
+
+function openTrade(signal, entry, sl, tp, asset, tf, lot) {
+    if (activeTrade) { toast('Close current trade first'); return; }
+    activeTrade = {
+        signal, entry, sl, tp, asset, tf, lot,
+        openTime: Date.now(),
+        originalSL: sl,
+        originalTP: tp,
+        breakEvenMoved: false,
+        partialClosed: false,
+        trailingActive: false,
+        status: 'OPEN',
+        pnl: 0,
+        highWater: entry,
+        lowWater: entry
+    };
+    localStorage.setItem('qep_activeTrade', JSON.stringify(activeTrade));
+    renderTradeManager();
+    if (tradeMonitorIv) clearInterval(tradeMonitorIv);
+    tradeMonitorIv = setInterval(monitorTrade, 5000);
+    addLog('✅ Trade OPENED: ' + asset + ' ' + signal + ' @ ' + fp(asset, entry), 'signal');
+    toast('✅ Trade opened');
+}
+
+function monitorTrade() {
+    if (!activeTrade || activeTrade.status !== 'OPEN') return;
+    const price = curMkt.price || activeTrade.entry;
+    const isBuy = activeTrade.signal === 'BUY' || activeTrade.signal === 'SCALP-LONG';
+    const atr = curMkt.atr || Math.abs(activeTrade.originalTP - activeTrade.entry) / 2.5 || 0.001;
+    const pips = isBuy ? price - activeTrade.entry : activeTrade.entry - price;
+    
+    if (isBuy) activeTrade.highWater = Math.max(activeTrade.highWater || price, price);
+    else activeTrade.lowWater = Math.min(activeTrade.lowWater || price, price);
+    
+    if (!activeTrade.breakEvenMoved && pips >= atr * 1.0) {
+        activeTrade.sl = activeTrade.entry;
+        activeTrade.breakEvenMoved = true;
+        toast('🔒 BE triggered');
+    }
+    if (pips >= atr * 1.5) {
+        activeTrade.trailingActive = true;
+        const newSL = isBuy ? price - atr * 0.8 : price + atr * 0.8;
+        if (isBuy && newSL > activeTrade.sl) activeTrade.sl = newSL;
+        if (!isBuy && newSL < activeTrade.sl) activeTrade.sl = newSL;
+    }
+    if (!activeTrade.partialClosed && pips >= atr * 1.0) {
+        activeTrade.partialClosed = true;
+        toast('🎯 Partial TP');
+    }
+    
+    const slHit = isBuy ? price <= activeTrade.sl : price >= activeTrade.sl;
+    if (slHit) { closeTrade('SL', price); return; }
+    const tpHit = isBuy ? price >= activeTrade.tp : price <= activeTrade.tp;
+    if (tpHit) { closeTrade('TP', price); return; }
+    
+    const pipVal = activeTrade.asset === 'XAUUSD' ? 100 : activeTrade.asset === 'BTCUSD' ? 1 : 100000;
+    activeTrade.pnl = parseFloat((pips * activeTrade.lot * pipVal * (activeTrade.partialClosed ? 0.5 : 1)).toFixed(2));
+    localStorage.setItem('qep_activeTrade', JSON.stringify(activeTrade));
+    renderTradeManager();
+}
+
+function closeTrade(reason, closePrice) {
+    if (!activeTrade) return;
+    const isBuy = activeTrade.signal === 'BUY' || activeTrade.signal === 'SCALP-LONG';
+    const pips = isBuy ? closePrice - activeTrade.entry : activeTrade.entry - closePrice;
+    const pipVal = activeTrade.asset === 'XAUUSD' ? 100 : activeTrade.asset === 'BTCUSD' ? 1 : 100000;
+    const pnl = parseFloat((pips * activeTrade.lot * pipVal).toFixed(2));
+    const result = pnl > 0 ? 'WIN' : 'LOSS';
+    
+    journal.unshift({
+        id: Date.now(),
+        time: new Date().toLocaleString(),
+        asset: activeTrade.asset,
+        tf: activeTrade.tf,
+        signal: activeTrade.signal,
+        entry: activeTrade.entry,
+        sl: activeTrade.originalSL,
+        tp: activeTrade.originalTP,
+        closePrice,
+        result,
+        pnl
+    });
+    localStorage.setItem('qep_journal', JSON.stringify(journal));
+    activeTrade = null;
+    localStorage.removeItem('qep_activeTrade');
+    if (tradeMonitorIv) { clearInterval(tradeMonitorIv); tradeMonitorIv = null; }
+    renderTradeManager();
+    renderJ('all');
+    toast(result === 'WIN' ? '✅ WIN $' + pnl : '❌ LOSS $' + Math.abs(pnl));
+}
+
+function renderTradeManager() {
+    const el = document.getElementById('tradeManagerPanel');
+    if (!el) return;
+    if (!activeTrade) {
+        el.innerHTML = '<div style="color:var(--sub);font-size:0.75rem;text-align:center;padding:14px;">No active trade.</div>';
+        return;
+    }
+    const t = activeTrade;
+    const price = curMkt.price || t.entry;
+    const isBuy = t.signal === 'BUY' || t.signal === 'SCALP-LONG';
+    const pnlColor = t.pnl >= 0 ? 'var(--green)' : 'var(--red)';
+    el.innerHTML = `
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:12px;">
+            <div class="mtile"><div class="ml">Signal</div><div class="mv" style="color:${isBuy ? 'var(--green)' : 'var(--red)'};">${t.signal}</div></div>
+            <div class="mtile"><div class="ml">Entry</div><div class="mv">${fp(t.asset, t.entry)}</div></div>
+            <div class="mtile"><div class="ml">SL</div><div class="mv" style="color:var(--red);">${fp(t.asset, t.sl)}</div></div>
+            <div class="mtile"><div class="ml">TP</div><div class="mv" style="color:var(--green);">${fp(t.asset, t.tp)}</div></div>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;font-size:0.75rem;">
+            <span style="background:#1e2d4a;padding:4px 10px;border-radius:8px;">P&L: <strong style="color:${pnlColor};">$${t.pnl}</strong></span>
+            <span style="background:${t.breakEvenMoved ? '#10b98133' : '#1e2d4a'};padding:4px 10px;border-radius:8px;">BE: ${t.breakEvenMoved ? '✅' : 'Pending'}</span>
+            <span style="background:${t.partialClosed ? '#10b98133' : '#1e2d4a'};padding:4px 10px;border-radius:8px;">Partial: ${t.partialClosed ? '✅' : 'Pending'}</span>
+            <button class="btn btn-red btn-sm" onclick="closeTrade('MANUAL', ${price})">🔴 Close</button>
+        </div>
+    `;
+}
+
+function openTradeFromSignal() {
+    if (!curSig || curSig.signal === 'HOLD') { toast('Generate a signal first'); return; }
+    openTrade(
+        curSig.signal,
+        curSig.entry,
+        curSig.sl,
+        curSig.tp,
+        curSig.asset,
+        curSig.tf,
+        parseFloat(document.getElementById('mLot')?.textContent) || 0.01
+    );
+}
+
+// ============================================================
+// SIGNAL GENERATION
+// ============================================================
+
+async function generateSignal() {
+    if (!derivWs || derivWs.readyState !== WebSocket.OPEN) {
+        toast('⚠️ Please connect to Deriv first (Settings → Test Connection)');
+        return;
+    }
+    
+    curAsset = document.getElementById('assetSel')?.value || 'EURUSD';
+    curTf = document.getElementById('tfSel')?.value || '5min';
+    curBal = parseFloat(document.getElementById('balInp')?.value) || 10000;
+    curRisk = parseFloat(document.getElementById('riskInp')?.value) || 1;
+    
+    // Subscribe to ticks for the selected symbol
+    const derivSymbol = getDerivSymbol(curAsset);
+    sendDerivRequest({ ticks: derivSymbol, subscribe: 1 });
+    
+    // Use current market data
+    const d = curMkt;
+    if (!d.price || d.price === 0) {
+        toast('⏳ Waiting for price data...');
+        setTimeout(generateSignal, 2000);
+        return;
+    }
+    
+    addLog('🔍 Generating forecast for ' + curAsset + '...', 'info');
+    
+    const isScalp = curTf === '1min' || curTf === '5min';
+    const votes = runAllStrategies(d, isScalp);
+    const {signal, conf, strategy, reasoning, confluence, buyCount, sellCount, totalStrats, weightedScore} = aiChooseStrategy(votes);
+    const forecast = calcForecastEntry(signal, d);
+    const entry = signal !== 'HOLD' ? forecast.entry : d.price;
+    const sl = signal !== 'HOLD' ? forecast.sl : null;
+    const tp = signal !== 'HOLD' ? forecast.tp : null;
+    
+    // Calculate lot
+    let lot = 0, riskAmt = 0, rewardAmt = 0;
+    if (sl && curBal && curRisk) {
+        const riskUSD = (curRisk / 100) * curBal;
+        const pips = Math.abs(entry - sl);
+        let pipVal = curAsset === 'XAUUSD' ? 100 : curAsset === 'BTCUSD' ? 1 : 100000;
+        lot = Math.min(10, Math.max(0.01, parseFloat((riskUSD / (pips * pipVal)).toFixed(2))));
+        riskAmt = parseFloat((lot * pips * pipVal).toFixed(2));
+        const rr = parseFloat(forecast.rr) || 3;
+        rewardAmt = parseFloat((riskAmt * rr).toFixed(2));
+    }
+    
+    curSig = {
+        signal, price: d.price, entry, sl, tp, conf, reasoning,
+        asset: curAsset, tf: curTf, strategy,
+        confluence, weightedScore,
+        entryType: forecast.entryType,
+        entryQuality: forecast.quality,
+        rr: forecast.rr
+    };
+    
+    // Update UI
+    const sigBadge = document.getElementById('sigBadge');
+    if (sigBadge) { sigBadge.className = 'sbadge ' + signal; sigBadge.textContent = signal; }
+    const sigCard = document.getElementById('sigCard');
+    if (sigCard) sigCard.className = 'sig-card ' + signal;
+    const assetTfLbl = document.getElementById('assetTfLbl');
+    if (assetTfLbl) assetTfLbl.textContent = curAsset + ' · ' + curTf;
+    const stratBadge = document.getElementById('chosenStratBadge');
+    if (stratBadge) stratBadge.textContent = strategy;
+    
+    const fEntry = document.getElementById('fEntry');
+    if (fEntry) fEntry.textContent = signal !== 'HOLD' ? fp(curAsset, entry) + ' (' + forecast.entryType + ')' : '---';
+    
+    if (signal !== 'HOLD') {
+        const dist = Math.abs(d.price - entry);
+        const maxDist = Math.abs(sl - entry) * 2;
+        const pct = Math.min(100, Math.round((1 - dist / maxDist) * 100));
+        const fDist = document.getElementById('fDistance');
+        if (fDist) fDist.textContent = fp(curAsset, dist);
+        const progFill = document.getElementById('entryProgressFill');
+        if (progFill) progFill.style.width = pct + '%';
+        const badge = document.getElementById('entryStatusBadge');
+        if (badge) {
+            if (dist < Math.abs(entry - sl) * 0.3) {
+                badge.textContent = '✅ READY TO EXECUTE';
+                badge.className = 'entry-status-badge es-ready';
+            } else {
+                badge.textContent = '⏳ WAITING (' + pct + '% to entry)';
+                badge.className = 'entry-status-badge es-waiting';
+            }
+        }
+    } else {
+        const fDist = document.getElementById('fDistance');
+        if (fDist) fDist.textContent = '---';
+        const progFill = document.getElementById('entryProgressFill');
+        if (progFill) progFill.style.width = '0%';
+        const badge = document.getElementById('entryStatusBadge');
+        if (badge) { badge.textContent = '⏳ WAITING FOR SIGNAL'; badge.className = 'entry-status-badge es-waiting'; }
+    }
+    
+    const confEl = document.getElementById('mConf');
+    if (confEl) confEl.textContent = conf + '%';
+    const confFill = document.getElementById('confFill');
+    if (confFill) confFill.style.width = conf + '%';
+    const confScore = document.getElementById('confScore');
+    if (confScore) confScore.textContent = confluence + '/' + (totalStrats || 17) + ' agree';
+    
+    const wEl = document.getElementById('mWeighted');
+    if (wEl) {
+        wEl.textContent = weightedScore + '%';
+        wEl.style.color = weightedScore >= 70 ? 'var(--green)' : weightedScore >= 50 ? 'var(--gold)' : 'var(--red)';
+    }
+    
+    const reasonBox = document.getElementById('reasonBox');
+    if (reasonBox) {
+        reasonBox.innerHTML = '🧠 ' + reasoning + (signal !== 'HOLD' ? '<br><span style="color:var(--gold);">📍 Entry: ' + fp(curAsset, entry) + ' | R:R ' + forecast.rr + 'R | ' + forecast.quality + '</span>' : '');
+    }
+    
+    const lotEl = document.getElementById('mLot');
+    if (lotEl) lotEl.textContent = lot.toFixed(2);
+    const riskEl = document.getElementById('mRisk');
+    if (riskEl) riskEl.textContent = riskAmt;
+    const rewardEl = document.getElementById('mReward');
+    if (rewardEl) rewardEl.textContent = rewardAmt;
+    const slEl = document.getElementById('mSL');
+    if (slEl) slEl.textContent = sl ? fp(curAsset, sl) : '---';
+    const tpEl = document.getElementById('mTP');
+    if (tpEl) tpEl.textContent = tp ? fp(curAsset, tp) : '---';
+    const rrEl = document.getElementById('mRR');
+    if (rrEl) rrEl.textContent = forecast.rr + 'R';
+    
+    // Strategy grid
+    const colors = {BUY: '#10b981', 'SCALP-LONG': '#10b981', SELL: '#ef4444', 'SCALP-SHORT': '#ef4444', HOLD: '#f59e0b'};
+    const stratGrid = document.getElementById('stratGrid');
+    if (stratGrid) {
+        stratGrid.innerHTML = votes.map(v => `
+            <div class="strat-tile ${v.signal !== 'HOLD' ? 'strat-active' : ''}" style="border-color:${colors[v.signal] || '#f59e0b'}33;color:${colors[v.signal] || '#f59e0b'};">
+                <div class="st-name">${v.icon} ${v.name}</div>
+                <div class="st-sig" style="color:${colors[v.signal] || '#f59e0b'};">${v.signal}</div>
+                <div class="st-conf" style="color:var(--sub);">${v.conf}%</div>
+            </div>
+        `).join('');
+    }
+    const stratSummary = document.getElementById('stratSummary');
+    if (stratSummary) {
+        stratSummary.innerHTML = '✅ ' + buyCount + ' Bullish | ❌ ' + sellCount + ' Bearish | ⚪ ' + (totalStrats - buyCount - sellCount) + ' Neutral | Score: <strong>' + weightedScore + '%</strong>';
+    }
+    
+    // S/R Zones
+    const srEl = document.getElementById('srZonesContent');
+    if (srEl && d.srZones) {
+        const zones = d.srZones || [];
+        if (!zones.length) {
+            srEl.innerHTML = '<span style="color:var(--sub);">No 3+ touch zones found.</span>';
+        } else {
+            const price = d.price;
+            const res = zones.filter(z => z.level > price).sort((a,b) => a.level - b.level).slice(0, 4);
+            const sup = zones.filter(z => z.level <= price).sort((a,b) => b.level - a.level).slice(0, 4);
+            let html = '<div style="font-size:0.68rem;color:var(--sub);margin-bottom:8px;">' + zones.length + ' zones with 2+ touches</div>';
+            if (res.length) {
+                html += '<div style="color:var(--red);font-weight:700;font-size:0.65rem;margin:4px 0;">▲ RESISTANCE</div>';
+                res.forEach(z => {
+                    html += `<div style="display:flex;justify-content:space-between;padding:4px 8px;background:#080e1f;border-radius:6px;margin-bottom:3px;border-left:3px solid var(--red);"><span style="font-family:var(--fm);">${fp(curAsset, z.level)}</span><span style="color:var(--sub);">${z.tests}x</span></div>`;
+                });
+            }
+            html += '<div style="text-align:center;padding:6px;color:var(--gold);font-weight:700;">📍 PRICE: ' + fp(curAsset, price) + '</div>';
+            if (sup.length) {
+                html += '<div style="color:var(--green);font-weight:700;font-size:0.65rem;margin:4px 0;">▼ SUPPORT</div>';
+                sup.forEach(z => {
+                    html += `<div style="display:flex;justify-content:space-between;padding:4px 8px;background:#080e1f;border-radius:6px;margin-bottom:3px;border-left:3px solid var(--green);"><span style="font-family:var(--fm);">${fp(curAsset, z.level)}</span><span style="color:var(--sub);">${z.tests}x</span></div>`;
+                });
+            }
+            srEl.innerHTML = html;
+        }
+    }
+    
+    updateExecCard();
+    
+    if (signal !== 'HOLD') {
+        journal.unshift({
+            id: Date.now(),
+            time: new Date().toLocaleString(),
+            asset: curAsset,
+            tf: curTf,
+            signal,
+            entry,
+            sl,
+            tp,
+            conf,
+            strategy,
+            result: null
+        });
+        localStorage.setItem('qep_journal', JSON.stringify(journal));
+        renderJ('all');
+        toast('🔔 ' + signal + ' forecast @ ' + fp(curAsset, entry) + ' — ' + conf + '%');
+    }
+    
+    const openTradeBtn = document.getElementById('openTradeBtn');
+    if (openTradeBtn) openTradeBtn.disabled = signal === 'HOLD' || !!activeTrade;
+    
+    updateChart();
+    addLog('📊 ' + curAsset + ' ' + signal + ' forecast @ ' + fp(curAsset, entry) + ' | ' + conf + '%', 'signal');
+    
+    // Auto-trade if bot is running
+    if (botRunning && signal !== 'HOLD') {
+        botCheckSignalForTrade(signal, entry, sl, tp, conf);
+    }
+}
+
+function updateChart() {
+    if (!curAsset) return;
+    const tvM = {
+        'XAUUSD': 'OANDA:XAUUSD',
+        'BTCUSD': 'BITSTAMP:BTCUSD',
+        'EURUSD': 'FX:EURUSD',
+        'GBPUSD': 'FX:GBPUSD',
+        'USDJPY': 'FX:USDJPY',
+        'AUDUSD': 'FX:AUDUSD',
+        'USDCAD': 'FX:USDCAD',
+        'US30': 'US30',
+        'NAS100': 'NAS100'
+    };
+    const iM = {'1min': '1', '5min': '5', '15min': '15', '1h': '60', '4h': '240', '1day': '1D'};
+    if (tvW) try { tvW.remove(); } catch(e) {}
+    const chartEl = document.getElementById('tvChart');
+    if (!chartEl) return;
+    chartEl.innerHTML = '';
     try {
-        // Get proposal
-        const proposalMsg = {
-            proposal: 1,
-            amount: stake,
-            basis: 'stake',
-            contract_type: isCall ? 'CALL' : 'PUT',
-            currency: derivCurrency || 'USD',
-            duration: duration,
-            duration_unit: 's',
-            symbol: symbol
-        };
-        
-        const proposalResult = await sendDerivRequestWithPromise(proposalMsg);
-        if (!proposalResult.proposal) {
-            return { success: false, error: 'No proposal received' };
-        }
-        
-        const proposal = proposalResult.proposal;
-        botLog(`📊 Proposal received: ${proposal.display_value}`, 'bot-info');
-        
-        // Execute trade
-        const buyMsg = {
-            buy: proposal.id,
-            price: proposal.ask_price
-        };
-        
-        const buyResult = await sendDerivRequestWithPromise(buyMsg);
-        if (!buyResult.buy) {
-            return { success: false, error: 'Buy failed' };
-        }
-        
-        const contract = buyResult.buy;
-        botLog(`✅ Trade executed! Contract: ${contract.contract_id}`, 'bot-success');
-        
+        tvW = new TradingView.widget({
+            width: '100%',
+            height: 380,
+            symbol: tvM[curAsset] || 'FX:EURUSD',
+            interval: iM[curTf] || '60',
+            theme: 'dark',
+            style: '1',
+            locale: 'en',
+            container_id: 'tvChart',
+            studies: ['RSI@tv-basicstudies', 'MACD@tv-basicstudies']
+        });
+    } catch(e) {}
+}
+
+function updateExecCard() {
+    const noSig = document.getElementById('execNoSignal');
+    const body = document.getElementById('execSignalBody');
+    if (!noSig || !body) return;
+    if (!curSig || curSig.signal === 'HOLD' || !curSig.price) {
+        noSig.style.display = 'block';
+        body.style.display = 'none';
+        return;
+    }
+    noSig.style.display = 'none';
+    body.style.display = 'block';
+    const s = curSig;
+    const isBuy = s.signal === 'BUY' || s.signal === 'SCALP-LONG';
+    const sigBadge = document.getElementById('execSigBadge');
+    if (sigBadge) { sigBadge.textContent = s.signal; sigBadge.style.color = isBuy ? 'var(--green)' : 'var(--red)'; }
+    const assetTf = document.getElementById('execAssetTf');
+    if (assetTf) assetTf.textContent = s.asset + ' · ' + s.tf;
+    const entryStatus = document.getElementById('execEntryStatus');
+    if (entryStatus) entryStatus.textContent = '⏳ Entry: ' + fp(s.asset, s.entry) + ' (' + s.entryType + ')';
+    const symEl = document.getElementById('execSymbol');
+    if (symEl) symEl.textContent = s.asset;
+    const stakeEl = document.getElementById('execStake');
+    if (stakeEl) stakeEl.textContent = '$' + (curBal * (curRisk / 100)).toFixed(2);
+    const slEl = document.getElementById('execSL');
+    if (slEl) slEl.textContent = s.sl ? fp(s.asset, s.sl) : 'N/A';
+    const tpEl = document.getElementById('execTP');
+    if (tpEl) tpEl.textContent = s.tp ? fp(s.asset, s.tp) : 'N/A';
+    const confBadge = document.getElementById('execConfBadge');
+    if (confBadge) {
+        confBadge.textContent = s.conf + '% · ' + s.strategy;
+        confBadge.style.borderColor = s.conf >= 70 ? 'var(--green)' : s.conf >= 50 ? 'var(--gold)' : 'var(--red)';
+        confBadge.style.color = s.conf >= 70 ? 'var(--green)' : s.conf >= 50 ? 'var(--gold)' : 'var(--red)';
+    }
+}
+
+function copyToClipboard(text, btn) {
+    if (!text || text === '--') { toast('No value'); return; }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(() => {
+            if (btn) { btn.textContent = '✅ Copied!'; btn.classList.add('copied'); setTimeout(() => { btn.textContent = '📋 Copy'; btn.classList.remove('copied'); }, 1800); }
+            toast('✅ Copied');
+        }).catch(() => fallbackCopy(text, btn));
+    } else fallbackCopy(text, btn);
+}
+
+function fallbackCopy(text, btn) {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand('copy'); toast('✅ Copied'); } catch(e) { toast('❌ Copy failed'); }
+    document.body.removeChild(ta);
+}
+
+function copyAllOrder() {
+    if (!curSig || curSig.signal === 'HOLD') { toast('No signal'); return; }
+    const s = curSig;
+    const dir = (s.signal === 'BUY' || s.signal === 'SCALP-LONG') ? 'BUY' : 'SELL';
+    const msg = 'SYMBOL: ' + s.asset + '\nACTION: ' + dir + '\nSTAKE: $' + (curBal * (curRisk / 100)).toFixed(2) + '\nENTRY: ' + fp(s.asset, s.entry) + '\nSL: ' + (s.sl ? fp(s.asset, s.sl) : 'N/A') + '\nTP: ' + (s.tp ? fp(s.asset, s.tp) : 'N/A') + '\nCONF: ' + s.conf + '%';
+    copyToClipboard(msg, document.getElementById('copyAllBtn'));
+}
+
+// ============================================================
+// JOURNAL
+// ============================================================
+
+function renderJ(f) {
+    let data = journal;
+    if (f && f !== 'all') data = data.filter(d => d.signal === f);
+    const wins = journal.filter(d => d.result === 'WIN').length;
+    const loss = journal.filter(d => d.result === 'LOSS').length;
+    const totalEl = document.getElementById('jTotal');
+    if (totalEl) totalEl.textContent = journal.length;
+    const winsEl = document.getElementById('jWins');
+    if (winsEl) winsEl.textContent = wins;
+    const lossEl = document.getElementById('jLoss');
+    if (lossEl) lossEl.textContent = loss;
+    const wrEl = document.getElementById('jWR');
+    if (wrEl) wrEl.textContent = wins + loss > 0 ? Math.round(wins / (wins + loss) * 100) + '%' : '--';
+    const bodyEl = document.getElementById('jBody');
+    if (!bodyEl) return;
+    if (!data.length) {
+        bodyEl.innerHTML = '<tr><td colspan="10" style="text-align:center;padding:20px;color:var(--muted);">No entries.</td></tr>';
+        return;
+    }
+    bodyEl.innerHTML = data.map(d => {
+        const sigClass = 'sig-chip sc-' + d.signal;
+        const resultColor = d.result === 'WIN' ? 'var(--green)' : d.result === 'LOSS' ? 'var(--red)' : 'var(--sub)';
+        return `<tr>
+            <td style="font-size:0.62rem;">${d.time}</td>
+            <td>${d.asset}</td>
+            <td>${d.tf}</td>
+            <td><span class="${sigClass}">${d.signal}</span></td>
+            <td style="font-family:var(--fm);">${fp(d.asset, d.entry)}</td>
+            <td style="font-family:var(--fm);color:var(--red);">${d.sl ? fp(d.asset, d.sl) : '--'}</td>
+            <td style="font-family:var(--fm);color:var(--green);">${d.tp ? fp(d.asset, d.tp) : '--'}</td>
+            <td>${d.conf || '--'}%</td>
+            <td style="font-size:0.62rem;">${(d.strategy || '').substring(0, 20)}</td>
+            <td style="color:${resultColor};font-weight:700;">${d.result || 'PENDING'}</td>
+        </tr>`;
+    }).join('');
+}
+
+function clearJ() {
+    if (confirm('Clear all?')) {
+        journal = [];
+        localStorage.setItem('qep_journal', '[]');
+        renderJ('all');
+    }
+}
+
+// ============================================================
+// BOT ENGINE
+// ============================================================
+
+let botConfig = { riskPct: 1.5, maxTrades: 5, minConfidence: 65, duration: 5, useSL: true, useTP: true, autoConfirm: true };
+
+function loadBotConfig() {
+    const risk = document.getElementById('botRiskPct');
+    if (risk) botConfig.riskPct = parseFloat(risk.value) || 1.5;
+    const maxTrades = document.getElementById('botMaxTrades');
+    if (maxTrades) botConfig.maxTrades = parseInt(maxTrades.value) || 5;
+    const minConf = document.getElementById('botMinConf');
+    if (minConf) botConfig.minConfidence = parseInt(minConf.value) || 65;
+    const duration = document.getElementById('botDuration');
+    if (duration) botConfig.duration = parseInt(duration.value) || 5;
+    const sl = document.getElementById('botUseSL');
+    if (sl) botConfig.useSL = sl.checked;
+    const tp = document.getElementById('botUseTP');
+    if (tp) botConfig.useTP = tp.checked;
+    const auto = document.getElementById('botAutoConfirm');
+    if (auto) botConfig.autoConfirm = auto.checked;
+}
+
+function botCheckSignalForTrade(signal, entry, sl, tp, confidence) {
+    if (!botRunning || botOrderPending) return;
+    loadBotConfig();
+    if (confidence < botConfig.minConfidence) {
+        botLog('⏭ Confidence ' + confidence + '% < ' + botConfig.minConfidence + '%', 'bot-warn');
+        return;
+    }
+    const today = new Date().toDateString();
+    if (botLastTradeDate !== today) { botDailyTrades = 0; botLastTradeDate = today; }
+    if (botDailyTrades >= botConfig.maxTrades) {
+        botLog('⏸ Daily limit reached', 'bot-warn');
+        return;
+    }
+    if ((botConfig.useSL && !sl) || (botConfig.useTP && !tp)) {
+        botLog('⏭ Missing SL/TP', 'bot-warn');
+        return;
+    }
+    if (!derivWs || derivWs.readyState !== WebSocket.OPEN) {
+        botLog('❌ Not connected to Deriv', 'bot-error');
+        return;
+    }
+    showBotOrderPreview(signal, entry, sl, tp, confidence);
+}
+
+function showBotOrderPreview(signal, entry, sl, tp, confidence) {
+    const preview = document.getElementById('botOrderPreview');
+    if (!preview) return;
+    botOrderPending = true;
+    const assetEl = document.getElementById('botPreviewAsset');
+    if (assetEl) assetEl.textContent = curAsset;
+    const signalEl = document.getElementById('botPreviewSignal');
+    if (signalEl) signalEl.textContent = signal;
+    const entryEl = document.getElementById('botPreviewEntry');
+    if (entryEl) entryEl.textContent = fp(curAsset, entry);
+    const slEl = document.getElementById('botPreviewSL');
+    if (slEl) slEl.textContent = sl ? fp(curAsset, sl) : 'N/A';
+    const tpEl = document.getElementById('botPreviewTP');
+    if (tpEl) tpEl.textContent = tp ? fp(curAsset, tp) : 'N/A';
+    const stake = curBal * (botConfig.riskPct / 100);
+    const stakeEl = document.getElementById('botPreviewStake');
+    if (stakeEl) stakeEl.textContent = '$' + stake.toFixed(2);
+    const durEl = document.getElementById('botPreviewDuration');
+    if (durEl) durEl.textContent = botConfig.duration + 's';
+    const confEl = document.getElementById('botPreviewConf');
+    if (confEl) confEl.textContent = confidence + '%';
+    preview.style.display = 'block';
+    botLog('📋 Preview for ' + signal + ' @ ' + fp(curAsset, entry), 'bot-info');
+    if (botConfig.autoConfirm) {
+        setTimeout(() => { botExecuteTrade(signal, entry, sl, tp, confidence); }, 3000);
+    }
+}
+
+async function botExecuteTrade(signal, entry, sl, tp, confidence) {
+    if (!botRunning) {
+        botOrderPending = false;
+        const p = document.getElementById('botOrderPreview');
+        if (p) p.style.display = 'none';
+        return;
+    }
+    const result = await executeDerivTrade(signal, entry, sl, tp, confidence);
+    botOrderPending = false;
+    const p = document.getElementById('botOrderPreview');
+    if (p) p.style.display = 'none';
+    if (result.success) {
+        botLog('✅ Trade executed!', 'bot-success');
+        toast('🤖 Bot executed ' + signal + ' trade!');
+        botTradeCount++;
+        botDailyTrades++;
+        const countEl = document.getElementById('botTradeCount');
+        if (countEl) countEl.textContent = '📊 Trades: ' + botTradeCount;
         // Log to journal
         journal.unshift({
             id: Date.now(),
@@ -888,986 +1902,420 @@ async function executeDerivTrade(signal, entry, sl, tp, confidence) {
             conf: confidence,
             strategy: '🤖 Deriv Bot',
             result: null,
-            contractId: contract.contract_id,
-            stake: stake
+            contractId: result.contractId
         });
         localStorage.setItem('qep_journal', JSON.stringify(journal));
         renderJ('all');
-        
-        botTradeCount++;
-        botDailyTrades++;
-        const el = document.getElementById('botTradeCount');
-        if(el) el.textContent = '📊 Trades: ' + botTradeCount;
-        
-        // Update balance
-        sendDerivRequest({ balance: 1 });
-        
-        return { success: true, contractId: contract.contract_id };
-        
-    } catch (error) {
-        botLog(`❌ Trade error: ${error.message}`, 'bot-error');
-        return { success: false, error: error.message };
+    } else {
+        botLog('❌ Trade failed: ' + (result.error || 'Unknown'), 'bot-error');
+        toast('❌ Trade failed');
     }
 }
 
-// ============================================================
-// DATA + INDICATORS (Same as before)
-// ============================================================
-const BASE={EURUSD:1.0872,GBPUSD:1.2754,USDJPY:149.42,AUDUSD:0.6618,USDCAD:1.3592,USDCHF:0.9021,NZDUSD:0.6102,BTCUSD:64500,ETHUSD:3150,LTCUSD:72,XAUUSD:2390,XAGUSD:28.5,US30:38500,NAS100:18500, '1HZ100V': 1000, '1HZ75V': 750, '1HZ50V': 500, '1HZ25V': 250};
-const SYM={XAUUSD:'XAU/USD',XAGUSD:'XAG/USD',BTCUSD:'BTC/USD',ETHUSD:'ETH/USD',EURUSD:'EUR/USD',GBPUSD:'GBP/USD',USDJPY:'USD/JPY',AUDUSD:'AUD/USD',USDCAD:'USD/CAD',USDCHF:'USD/CHF',NZDUSD:'NZD/USD',US30:'US30',NAS100:'NAS100',LTCUSD:'LTC/USD','1HZ100V':'Volatility 100','1HZ75V':'Volatility 75','1HZ50V':'Volatility 50','1HZ25V':'Volatility 25'};
-const INT_MAP={'1min':'1min','5min':'5min','15min':'15min','1h':'1h','4h':'4h','1day':'1day'};
-
-function simData(asset){
-  const base=BASE[asset]||1.2;
-  const seed=Math.floor(Date.now()/60000);
-  const seededRand=(n)=>{ let x=Math.sin(seed*9301+n*49297+asset.charCodeAt(0)*233)*10000; return x-Math.floor(x); };
-  const drift=(seededRand(0)-0.48)*base*0.004;
-  const price=base+drift;
-  const n=200;
-  let closes=[],highs=[],lows=[];
-  let p=price;
-  for(let i=0;i<n;i++){
-    const chg=(seededRand(i+1)-0.49)*base*0.003;
-    p=Math.max(base*0.95,p+chg);
-    const hi=p*(1+seededRand(i+100)*0.002);
-    const lo=p*(1-seededRand(i+200)*0.002);
-    closes.push(p); highs.push(hi); lows.push(lo);
-  }
-  closes[n-1]=price; highs[n-1]=price*(1+seededRand(999)*0.002); lows[n-1]=price*(1-seededRand(998)*0.002);
-  return buildIndicators(asset,price,closes,highs,lows);
+async function botSimulateTrade() {
+    if (!curSig || curSig.signal === 'HOLD') { toast('Generate a signal first'); return; }
+    if (!derivWs || derivWs.readyState !== WebSocket.OPEN) { toast('Connect to Deriv first'); return; }
+    botLog('🎯 Simulating trade', 'bot-info');
+    const preview = document.getElementById('botOrderPreview');
+    if (preview) {
+        const assetEl = document.getElementById('botPreviewAsset');
+        if (assetEl) assetEl.textContent = curAsset;
+        const signalEl = document.getElementById('botPreviewSignal');
+        if (signalEl) signalEl.textContent = curSig.signal;
+        const entryEl = document.getElementById('botPreviewEntry');
+        if (entryEl) entryEl.textContent = fp(curAsset, curSig.entry);
+        const slEl = document.getElementById('botPreviewSL');
+        if (slEl) slEl.textContent = curSig.sl ? fp(curAsset, curSig.sl) : 'N/A';
+        const tpEl = document.getElementById('botPreviewTP');
+        if (tpEl) tpEl.textContent = curSig.tp ? fp(curAsset, curSig.tp) : 'N/A';
+        const stake = curBal * (botConfig.riskPct / 100);
+        const stakeEl = document.getElementById('botPreviewStake');
+        if (stakeEl) stakeEl.textContent = '$' + stake.toFixed(2);
+        const durEl = document.getElementById('botPreviewDuration');
+        if (durEl) durEl.textContent = botConfig.duration + 's';
+        const confEl = document.getElementById('botPreviewConf');
+        if (confEl) confEl.textContent = curSig.conf + '%';
+        preview.style.display = 'block';
+        botOrderPending = true;
+    }
+    toast('📋 Simulated preview ready');
 }
 
-function buildIndicators(asset,price,closes,highs,lows){
-  const n=closes.length;
-  let g=0,l=0;
-  for(let i=Math.max(0,n-14);i<n-1;i++){const d=closes[i+1]-closes[i];if(d>=0)g+=d;else l-=d;}
-  const rs=(g/14)/((l/14)||0.001);
-  const rsi=parseFloat((100-100/(1+rs)).toFixed(1));
-  let tr=[];
-  for(let i=1;i<highs.length;i++) tr.push(Math.max(highs[i]-lows[i],Math.abs(highs[i]-closes[i-1]),Math.abs(lows[i]-closes[i-1])));
-  let atr=tr.slice(0,14).reduce((a,b)=>a+b,0)/14;
-  for(let i=14;i<tr.length;i++) atr=(atr*13+tr[i])/14;
-  const ema=(arr,p)=>{let e=arr.slice(0,p).reduce((a,b)=>a+b,0)/p;for(let i=p;i<arr.length;i++)e=(arr[i]*(2/(p+1)))+(e*(1-2/(p+1)));return e;};
-  const ema12=ema(closes,12); const ema26=ema(closes,26);
-  const macd=ema12-ema26;
-  const ema20=ema(closes.slice(-Math.min(20,n)),Math.min(20,n));
-  const ema50=ema(closes.slice(-Math.min(50,n)),Math.min(50,n));
-  const ema200=ema(closes.slice(-Math.min(n,n)),Math.min(n,n));
-  let rets=[];for(let i=1;i<closes.length;i++) rets.push((closes[i]-closes[i-1])/closes[i-1]);
-  const mean=rets.reduce((a,b)=>a+b,0)/rets.length;
-  const vol=Math.sqrt(rets.reduce((a,b)=>a+Math.pow(b-mean,2),0)/rets.length)*100;
-
-  function findSRZones(h,l,c2,atrVal){
-    const tolerance=atrVal*0.4;
-    const candidates=[];
-    for(let j=2;j<h.length-2;j++){
-      if(h[j]>h[j-1]&&h[j]>h[j-2]&&h[j]>h[j+1]&&h[j]>h[j+2]) candidates.push({level:h[j],type:'resistance',idx:j});
-      if(l[j]<l[j-1]&&l[j]<l[j-2]&&l[j]<l[j+1]&&l[j]<l[j+2]) candidates.push({level:l[j],type:'support',idx:j});
+async function botStart() {
+    if (botRunning) { toast('Already running'); return; }
+    loadBotConfig();
+    if (!derivAppId || !derivApiKey) {
+        toast('Configure Deriv App ID and Token in Settings');
+        botLog('❌ No config', 'bot-error');
+        return;
     }
-    const zones=[];
-    candidates.forEach(cand=>{
-      let merged=false;
-      for(let k=0;k<zones.length;k++){
-        if(Math.abs(zones[k].level-cand.level)<=tolerance){
-          zones[k].level=(zones[k].level*zones[k].tests+cand.level)/(zones[k].tests+1);
-          zones[k].tests++;
-          zones[k].lastIdx=Math.max(zones[k].lastIdx,cand.idx);
-          if(zones[k].type!==cand.type) zones[k].type='both';
-          merged=true;break;
+    if (!derivWs || derivWs.readyState !== WebSocket.OPEN) {
+        toast('Connecting to Deriv...');
+        const connected = await connectDeriv();
+        if (!connected) { toast('Connection failed'); return; }
+    }
+    const today = new Date().toDateString();
+    if (botLastTradeDate !== today) { botDailyTrades = 0; botLastTradeDate = today; }
+    botRunning = true;
+    const dot = document.getElementById('botStatusDot');
+    if (dot) dot.className = 'bot-status-dot on';
+    const text = document.getElementById('botStatusText');
+    if (text) text.textContent = 'Bot: RUNNING';
+    const startBtn = document.getElementById('botStartBtn');
+    if (startBtn) startBtn.disabled = true;
+    const stopBtn = document.getElementById('botStopBtn');
+    if (stopBtn) stopBtn.disabled = false;
+    botSignalCheckInterval = setInterval(() => {
+        if (curSig && curSig.signal !== 'HOLD' && !botOrderPending) {
+            botCheckSignalForTrade(curSig.signal, curSig.entry, curSig.sl, curSig.tp, curSig.conf);
         }
-      }
-      if(!merged) zones.push({level:cand.level,type:cand.type,tests:1,lastIdx:cand.idx});
-    });
-    return zones.filter(z=>z.tests>=3).sort((a,b)=>b.tests-a.tests);
-  }
-
-  const srZones=findSRZones(highs,lows,closes,atr);
-  const supportZones=srZones.filter(z=>z.level<price&&(z.type==='support'||z.type==='both'))
-    .sort((a,b)=>(b.tests*3+b.lastIdx/closes.length*2)- (a.tests*3+a.lastIdx/closes.length*2));
-  const resistanceZones=srZones.filter(z=>z.level>price&&(z.type==='resistance'||z.type==='both'))
-    .sort((a,b)=>(b.tests*3+b.lastIdx/closes.length*2)- (a.tests*3+a.lastIdx/closes.length*2));
-  const support=supportZones.length?supportZones[0].level:Math.min(...lows.slice(-20));
-  const resistance=resistanceZones.length?resistanceZones[0].level:Math.max(...highs.slice(-20));
-
-  const bSlice=closes.slice(-20);
-  const bMean=bSlice.reduce((a,b)=>a+b,0)/20;
-  const bStd=Math.sqrt(bSlice.reduce((a,b)=>a+Math.pow(b-bMean,2),0)/20);
-  const bbUpper=bMean+2*bStd; const bbLower=bMean-2*bStd;
-  const bbWidth=(bbUpper-bbLower)/bMean;
-  const swingH=Math.max(...highs.slice(-30)); const swingL=Math.min(...lows.slice(-30));
-  const fibRange=swingH-swingL;
-  const fib382=swingL+fibRange*0.382; const fib50=swingL+fibRange*0.5; const fib618=swingL+fibRange*0.618;
-
-  let hh=0,ll=0;
-  for(let i=2;i<Math.min(highs.length,10);i++){if(highs[i]>highs[i-2])hh++;if(lows[i]<lows[i-2])ll++;}
-  const structure=hh>ll?'BULLISH':ll>hh?'BEARISH':'RANGING';
-
-  let obBull=null,obBear=null;
-  for(let i=n-10;i<n-1;i++){
-    const body=Math.abs(closes[i]-closes[i-1]||0);
-    if(body>atr*1.5){
-      if(closes[i]>closes[i-1]) obBull={high:highs[i],low:lows[i],price:(highs[i]+lows[i])/2};
-      else obBear={high:highs[i],low:lows[i],price:(highs[i]+lows[i])/2};
+    }, 30000);
+    botLog('🚀 Bot started', 'bot-success');
+    toast('🤖 Bot started');
+    if (curSig && curSig.signal !== 'HOLD') {
+        setTimeout(() => {
+            botCheckSignalForTrade(curSig.signal, curSig.entry, curSig.sl, curSig.tp, curSig.conf);
+        }, 2000);
     }
-  }
-  let fvgBull=null,fvgBear=null;
-  for(let i=1;i<n-1;i++){
-    if(lows[i+1]>highs[i-1]) fvgBull={top:lows[i+1],bot:highs[i-1],mid:(lows[i+1]+highs[i-1])/2};
-    if(highs[i+1]<lows[i-1]) fvgBear={top:lows[i-1],bot:highs[i+1],mid:(lows[i-1]+highs[i+1])/2};
-  }
-  const recentHigh=Math.max(...highs.slice(-10,n-1)); const recentLow=Math.min(...lows.slice(-10,n-1));
-  const sweptHigh=highs[n-1]>recentHigh&&closes[n-1]<recentHigh;
-  const sweptLow=lows[n-1]<recentLow&&closes[n-1]>recentLow;
-  const vSeed=Math.floor(Date.now()/60000);
-  const vR=(n)=>{let x=Math.sin(vSeed*7919+n*6271)*10000;return x-Math.floor(x);};
-  const volSpike=vR(1)>0.7; const volDir=vR(2)>0.5?'up':'down';
-
-  return {price,rsi,atr:parseFloat(atr.toFixed(asset==='BTCUSD'?0:5)),macd:parseFloat(macd.toFixed(5)),
-    vol:parseFloat(vol.toFixed(2)),support,resistance,allSupportZones:supportZones,allResistanceZones:resistanceZones,srZones,
-    ema20,ema50,ema200,closes,highs,lows,
-    bbUpper,bbLower,bbWidth,fib382,fib50,fib618,swingH,swingL,structure,
-    obBull,obBear,fvgBull,fvgBear,sweptHigh,sweptLow,volSpike,volDir};
 }
 
-async function fetchData(asset,tf){
-  if(!twelveKey || twelveKey.length < 5){
-    updateDataStatus(false);
-    return simData(asset);
-  }
-  try{
-    const url=`https://api.twelvedata.com/time_series?symbol=${SYM[asset]}&interval=${INT_MAP[tf]||'1h'}&outputsize=500&apikey=${twelveKey}`;
-    const r=await fetch(url);
-    const j=await r.json();
-    if(j.status==='error' || j.code || !j.values || j.values.length<30){
-      updateDataStatus(false);
-      return simData(asset);
-    }
-    let closes=[],highs=[],lows=[];
-    for(let i=j.values.length-1;i>=0;i--){
-      closes.push(parseFloat(j.values[i].close));
-      highs.push(parseFloat(j.values[i].high));
-      lows.push(parseFloat(j.values[i].low));
-    }
-    const price=closes[closes.length-1];
-    updateDataStatus(true);
-    return buildIndicators(asset,price,closes,highs,lows);
-  }catch(e){
-    updateDataStatus(false);
-    return simData(asset);
-  }
+function botStop() {
+    if (!botRunning) { toast('Not running'); return; }
+    botRunning = false;
+    if (botSignalCheckInterval) { clearInterval(botSignalCheckInterval); botSignalCheckInterval = null; }
+    botOrderPending = false;
+    const p = document.getElementById('botOrderPreview');
+    if (p) p.style.display = 'none';
+    const dot = document.getElementById('botStatusDot');
+    if (dot) dot.className = 'bot-status-dot off';
+    const text = document.getElementById('botStatusText');
+    if (text) text.textContent = 'Bot: STOPPED';
+    const startBtn = document.getElementById('botStartBtn');
+    if (startBtn) startBtn.disabled = false;
+    const stopBtn = document.getElementById('botStopBtn');
+    if (stopBtn) stopBtn.disabled = true;
+    botLog('⏹ Bot stopped', 'bot-warn');
+    toast('⏹ Bot stopped');
 }
 
-function updateDataStatus(isLive){
-  isLiveData = isLive;
-  const pill=document.getElementById('dataPill');
-  if(isLive && twelveKey){
-    if(pill){pill.textContent='📡 LIVE DATA'; pill.className='pill pill-green';}
-  } else {
-    if(pill){pill.textContent='📡 SIMULATED'; pill.className='pill pill-gold';}
-  }
+function botClearLog() {
+    const box = document.getElementById('botLogBox');
+    if (box) { box.innerHTML = '<div style="color:var(--muted);text-align:center;padding:20px;">Log cleared.</div>'; botLogs = []; }
 }
 
-// ============================================================
-// STRATEGY ENGINE
-// ============================================================
-function runAllStrategies(d,isScalp){
-  const {price,rsi,macd,vol,support,resistance,atr,ema20,ema50,ema200,structure,
-    bbWidth,bbLower,bbUpper,fib382,fib50,fib618,obBull,obBear,fvgBull,fvgBear,
-    sweptHigh,sweptLow,volSpike,volDir,closes,highs,lows} = d;
-  const votes=[];
-  function addStrat(name,icon,signal,conf,reason){ votes.push({name,icon,signal,conf,reason}); }
-  
-  const emaBull=price>ema20&&ema20>ema50&&macd>0;
-  const emaBear=price<ema20&&ema20<ema50&&macd<0;
-  addStrat('EMA Trend','📈',emaBull?'BUY':emaBear?'SELL':'HOLD',emaBull||emaBear?72:30,'EMA trend');
-  
-  const dSup=Math.abs(price-support)/atr; const dRes=Math.abs(resistance-price)/atr;
-  const srBull=rsi<42&&dSup<0.6; const srBear=rsi>58&&dRes<0.6;
-  addStrat('S/R Bounce','🏀',srBull?'BUY':srBear?'SELL':'HOLD',srBull||srBear?74:28,'S/R bounce');
-  
-  addStrat('RSI Div','🔄',rsi<32?'BUY':rsi>68?'SELL':'HOLD',rsi<32||rsi>68?67:25,'RSI');
-  
-  const nearFib618=Math.abs(price-fib618)/atr<0.5; const nearFib50=Math.abs(price-fib50)/atr<0.5;
-  const fibBull=(nearFib618||nearFib50)&&macd>0; const fibBear=(nearFib618||nearFib50)&&macd<0;
-  addStrat('Fibonacci','🌀',fibBull?'BUY':fibBear?'SELL':'HOLD',fibBull||fibBear?71:30,'Fibonacci');
-  
-  const squeeze=bbWidth<0.005;
-  const bbBreakBull=price>bbUpper&&macd>0; const bbBreakBear=price<bbLower&&macd<0;
-  addStrat('BB Squeeze','🎯',squeeze?(macd>0?'BUY':'SELL'):bbBreakBull?'BUY':bbBreakBear?'SELL':'HOLD',65,'BB');
-  
-  addStrat('Mkt Struct','🏗️',structure==='BULLISH'?'BUY':structure==='BEARISH'?'SELL':'HOLD',68,'Structure');
-  
-  const mtfBull=price>ema200&&ema50>ema200; const mtfBear=price<ema200&&ema50<ema200;
-  addStrat('Multi-TF','📐',mtfBull?'BUY':mtfBear?'SELL':'HOLD',mtfBull||mtfBear?73:30,'Multi-TF');
-  
-  const obBullActive=obBull&&Math.abs(price-obBull.price)/atr<1&&macd>0;
-  const obBearActive=obBear&&Math.abs(price-obBear.price)/atr<1&&macd<0;
-  addStrat('Order Block','📦',obBullActive?'BUY':obBearActive?'SELL':'HOLD',76,'Order Block');
-  
-  const fvgBullActive=fvgBull&&price<=fvgBull.top&&price>=fvgBull.bot;
-  const fvgBearActive=fvgBear&&price<=fvgBear.top&&price>=fvgBear.bot;
-  addStrat('FVG','🔲',fvgBullActive?'BUY':fvgBearActive?'SELL':'HOLD',74,'FVG');
-  
-  addStrat('Liq Sweep','💧',sweptLow?'BUY':sweptHigh?'SELL':'HOLD',78,'Liquidity Sweep');
-  
-  const volBull=volSpike&&volDir==='up'&&macd>0; const volBear=volSpike&&volDir==='down'&&macd<0;
-  addStrat('Volume','📊',volBull?'BUY':volBear?'SELL':'HOLD',69,'Volume');
-  
-  const cp=detectPattern(closes, highs, lows, atr);
-  addStrat('Candle','🕯️',cp.bias==='bull'?'BUY':cp.bias==='bear'?'SELL':'HOLD',cp.strength,cp.pattern);
-  
-  return votes;
+function botCancelPreview() {
+    botOrderPending = false;
+    const p = document.getElementById('botOrderPreview');
+    if (p) p.style.display = 'none';
+    botLog('✕ Preview cancelled', 'bot-info');
 }
-
-function detectPattern(closes, highs, lows, atr){
-  const n=closes.length; 
-  if(!closes || !highs || !lows || n<4) return {pattern:'None',bias:'neutral',strength:0};
-  const i=n-1;
-  const body=Math.abs(closes[i]-closes[i-1]);
-  const range=highs[i]-lows[i];
-  const bodyRatio=range>0?body/range:0;
-  const isBull=closes[i]>closes[i-1];
-  const isBear=closes[i]<closes[i-1];
-  const isDoji=bodyRatio<0.1&&range>atr*0.3;
-  const isHammer=!isDoji&&(closes[i]-lows[i])>body*2.5 && (highs[i]-closes[i])<body*0.5;
-  const isShootingStar=!isDoji&&(highs[i]-closes[i])>body*2.5 && (closes[i]-lows[i])<body*0.5;
-  if(isDoji) return {pattern:'Doji',bias:'neutral',strength:55};
-  if(i>=2 && isBear && isBull && closes[i]>closes[i-2]) return {pattern:'Bull Engulfing',bias:'bull',strength:82};
-  if(i>=2 && isBull && isBear && closes[i]<closes[i-2]) return {pattern:'Bear Engulfing',bias:'bear',strength:82};
-  if(isHammer && i>=2 && closes[i-1]<closes[i-2]) return {pattern:'Hammer',bias:'bull',strength:70};
-  if(isShootingStar && i>=2 && closes[i-1]>closes[i-2]) return {pattern:'Shooting Star',bias:'bear',strength:70};
-  if(i>=3 && isBull && isBull && isBull && body>atr*0.5) return {pattern:'3 White Soldiers',bias:'bull',strength:90};
-  if(i>=3 && isBear && isBear && isBear && body>atr*0.5) return {pattern:'3 Black Crows',bias:'bear',strength:90};
-  return {pattern:'None',bias:'neutral',strength:0};
-}
-
-function aiChooseStrategy(votes,d,isScalp){
-  const total=votes.length;
-  let buySum=0, buyCount=0, sellSum=0, sellCount=0;
-  let buyConfluence=0, sellConfluence=0;
-  votes.forEach(function(v){
-    const isBuy=v.signal==='BUY'||v.signal==='SCALP-LONG';
-    const isSell=v.signal==='SELL'||v.signal==='SCALP-SHORT';
-    if(isBuy){ buySum+=v.conf; buyCount++; buyConfluence+=v.conf*v.conf/100; }
-    else if(isSell){ sellSum+=v.conf; sellCount++; sellConfluence+=v.conf*v.conf/100; }
-  });
-  const buyAvg=buyCount?buySum/buyCount:0;
-  const sellAvg=sellCount?sellSum/sellCount:0;
-  const buyWeighted=buyCount?buyConfluence/buyCount:0;
-  const sellWeighted=sellCount?sellConfluence/sellCount:0;
-  let signal='HOLD', conf=25, chosenStrat='NEUTRAL';
-  let reasoning='';
-  if(buyWeighted>sellWeighted && buyWeighted>30){
-    signal=isScalp?'SCALP-LONG':'BUY';
-    conf=Math.min(95,Math.round(buyWeighted + buyCount*2));
-    chosenStrat=`BUY (${buyCount}/${total})`;
-    reasoning=`${buyCount} BUY, ${sellCount} SELL. BUY favored.`;
-  } else if(sellWeighted>buyWeighted && sellWeighted>30){
-    signal=isScalp?'SCALP-SHORT':'SELL';
-    conf=Math.min(95,Math.round(sellWeighted + sellCount*2));
-    chosenStrat=`SELL (${sellCount}/${total})`;
-    reasoning=`${sellCount} SELL, ${buyCount} BUY. SELL favored.`;
-  } else {
-    signal='HOLD';
-    conf=Math.max(15,Math.round((buyWeighted+sellWeighted)/2));
-    chosenStrat='CONFLICTED';
-    reasoning=`Mixed: BUY avg ${Math.round(buyAvg)}%, SELL avg ${Math.round(sellAvg)}%`;
-  }
-  const confluence=Math.max(buyCount,sellCount);
-  return {signal,conf,strategy:chosenStrat,reasoning,confluence,buyCount,sellCount,totalStrats:total,weightedScore:conf};
-}
-
-function calcForecastEntry(signal,d,isScalp){
-  const price=d.price, atr=d.atr;
-  const isBuy=signal==='BUY'||signal==='SCALP-LONG';
-  const isSell=signal==='SELL'||signal==='SCALP-SHORT';
-  const allSupports=d.allSupportZones||[];
-  const allResistances=d.allResistanceZones||[];
-  let entry=price, sl=null, tp=null, entryType='Market', quality='MARKET';
-  if(isBuy){
-    const bestSup=allSupports.filter(z=>z.level<price-atr*0.2).sort((a,b)=>b.tests-a.tests);
-    if(bestSup.length){
-      const z=bestSup[0];
-      entry=z.level + atr*0.1;
-      sl=z.level - atr*0.2;
-      entryType=`Support (${z.tests}x)`;
-      quality=z.tests>=5?'ELITE':z.tests>=4?'STRONG':'SOLID';
-      const riskDistance = entry - sl;
-      tp = entry + (riskDistance * 3);
-    } else {
-      entry=price-atr*0.8; sl=entry-atr*1.0;
-      const riskDistance = entry - sl;
-      tp = entry + (riskDistance * 3);
-      entryType='ATR Fallback';
-    }
-  } else if(isSell){
-    const bestRes=allResistances.filter(z=>z.level>price+atr*0.2).sort((a,b)=>b.tests-a.tests);
-    if(bestRes.length){
-      const z=bestRes[0];
-      entry=z.level - atr*0.1;
-      sl=z.level + atr*0.2;
-      entryType=`Resistance (${z.tests}x)`;
-      quality=z.tests>=5?'ELITE':z.tests>=4?'STRONG':'SOLID';
-      const riskDistance = sl - entry;
-      tp = entry - (riskDistance * 3);
-    } else {
-      entry=price+atr*0.8; sl=entry+atr*1.0;
-      const riskDistance = sl - entry;
-      tp = entry - (riskDistance * 3);
-      entryType='ATR Fallback';
-    }
-  }
-  entry=Math.max(price-atr*3,Math.min(price+atr*3,entry));
-  if(isBuy){ sl = Math.min(entry - atr*0.2, sl || entry - atr*1.0); tp = Math.max(entry + atr*2.0, tp || entry + atr*3.0); }
-  else if(isSell){ sl = Math.max(entry + atr*0.2, sl || entry + atr*1.0); tp = Math.min(entry - atr*2.0, tp || entry - atr*3.0); }
-  const risk = Math.abs(entry - sl);
-  const reward = Math.abs(tp - entry);
-  const rr = risk>0 ? (reward/risk).toFixed(1) : '0';
-  return {entry,sl,tp,entryType,quality,rr,risk,reward};
-}
-
-// ============================================================
-// UI FUNCTIONS
-// ============================================================
-
-function updParams(){
-  curAsset=document.getElementById('assetSel')?.value || '';
-  curTf=document.getElementById('tfSel')?.value || '';
-  curBal=parseFloat(document.getElementById('balInp')?.value) || 0;
-  curRisk=parseFloat(document.getElementById('riskInp')?.value) || 0;
-  const ok=curAsset&&curTf&&curBal>0&&curRisk>0;
-  ['genBtn','autoBtn','scalpBtn','openTradeBtn'].forEach(id=>{
-    const el=document.getElementById(id);
-    if(el) el.disabled=!ok;
-  });
-  logsOn=ok;
-  const warnEl=document.getElementById('paramWarn');
-  if(!ok && warnEl){
-    let m=[];if(!curAsset)m.push('Asset');if(!curTf)m.push('Timeframe');if(!curBal)m.push('Balance');if(!curRisk)m.push('Risk %');
-    warnEl.textContent='⚠️ Missing: '+m.join(', ');
-  } else if(warnEl) warnEl.textContent='';
-  return ok;
-}
-
-async function refreshSignal(){
-  if(!updParams()) return;
-  addLog('🔍 Forecasting '+curAsset+' '+curTf+'...','info');
-  const d=await fetchData(curAsset,curTf);
-  curMkt=d;
-  const isScalp=curTf==='1min'||curTf==='5min';
-  const votes=runAllStrategies(d,isScalp);
-  const {signal,conf,strategy,reasoning,confluence,buyCount,sellCount,totalStrats,weightedScore}=aiChooseStrategy(votes,d,isScalp);
-  const forecast=calcForecastEntry(signal,d,isScalp);
-  const entry=signal!=='HOLD'?forecast.entry:d.price;
-  const sl=signal!=='HOLD'?forecast.sl:null;
-  const tp=signal!=='HOLD'?forecast.tp:null;
-  
-  let lot=0,riskAmt=0,rewardAmt=0;
-  if(sl&&curBal&&curRisk){
-    const riskUSD=(curRisk/100)*curBal;
-    const pips=Math.abs(entry-sl);
-    let pipVal=curAsset==='XAUUSD'?100:curAsset==='BTCUSD'?1:100000;
-    lot=Math.min(10,Math.max(0.01,parseFloat((riskUSD/(pips*pipVal)).toFixed(2))));
-    riskAmt=parseFloat((lot*pips*pipVal).toFixed(2));
-    const rr = parseFloat(forecast.rr) || 3;
-    rewardAmt=parseFloat((riskAmt * rr).toFixed(2));
-  }
-  curSig={signal,price:d.price,entry,sl,tp,conf,reasoning,asset:curAsset,tf:curTf,strategy,confluence,weightedScore,entryType:forecast.entryType,entryQuality:forecast.quality,rr:forecast.rr};
-  
-  // Update UI
-  const sigBadge=document.getElementById('sigBadge');
-  if(sigBadge){sigBadge.className='sbadge '+signal; sigBadge.textContent=signal;}
-  const sigCard=document.getElementById('sigCard');
-  if(sigCard) sigCard.className='sig-card '+signal;
-  const assetTfLbl=document.getElementById('assetTfLbl');
-  if(assetTfLbl) assetTfLbl.textContent=curAsset+' · '+curTf;
-  const stratBadge=document.getElementById('chosenStratBadge');
-  if(stratBadge) stratBadge.textContent=strategy;
-  
-  const fEntry=document.getElementById('fEntry');
-  if(fEntry) fEntry.textContent=signal!=='HOLD'?fp(curAsset,entry)+' ('+forecast.entryType+')':'---';
-  const fPrice=document.getElementById('fCurrentPrice');
-  if(fPrice) fPrice.textContent=fp(curAsset,d.price);
-  
-  if(signal!=='HOLD'){
-    const dist=Math.abs(d.price-entry);
-    const maxDist=Math.abs(sl-entry)*2;
-    const pct=Math.min(100,Math.round((1-dist/maxDist)*100));
-    const fDist=document.getElementById('fDistance');
-    if(fDist) fDist.textContent=fp(curAsset,dist);
-    const progFill=document.getElementById('entryProgressFill');
-    if(progFill) progFill.style.width=pct+'%';
-    const badge=document.getElementById('entryStatusBadge');
-    if(badge){
-      if(dist<Math.abs(entry-sl)*0.3){ badge.textContent='✅ READY TO EXECUTE'; badge.className='entry-status-badge es-ready'; }
-      else { badge.textContent='⏳ WAITING ('+pct+'% to entry)'; badge.className='entry-status-badge es-waiting'; }
-    }
-  } else {
-    const fDist=document.getElementById('fDistance');
-    if(fDist) fDist.textContent='---';
-    const progFill=document.getElementById('entryProgressFill');
-    if(progFill) progFill.style.width='0%';
-    const badge=document.getElementById('entryStatusBadge');
-    if(badge){ badge.textContent='⏳ WAITING FOR SIGNAL'; badge.className='entry-status-badge es-waiting'; }
-  }
-  
-  const rsiEl=document.getElementById('mRSI'); if(rsiEl) rsiEl.textContent=d.rsi;
-  const atrEl=document.getElementById('mATR'); if(atrEl) atrEl.textContent=fp(curAsset,d.atr);
-  const emaEl=document.getElementById('mEMA'); if(emaEl){emaEl.textContent=d.price>d.ema50?'▲ BULL':'▼ BEAR'; emaEl.style.color=d.price>d.ema50?'var(--green)':'var(--red)';}
-  const structEl=document.getElementById('mStruct'); if(structEl){structEl.textContent=d.structure; structEl.style.color=d.structure==='BULLISH'?'var(--green)':d.structure==='BEARISH'?'var(--red)':'var(--gold)';}
-  const wEl=document.getElementById('mWeighted'); if(wEl){wEl.textContent=weightedScore+'%'; wEl.style.color=weightedScore>=70?'var(--green)':weightedScore>=50?'var(--gold)':'var(--red)';}
-  const confEl=document.getElementById('mConf'); if(confEl) confEl.textContent=conf+'%';
-  const confFill=document.getElementById('confFill'); if(confFill) confFill.style.width=conf+'%';
-  const confScore=document.getElementById('confScore'); if(confScore) confScore.textContent=confluence+'/'+(totalStrats||17)+' agree';
-  
-  const reasonBox=document.getElementById('reasonBox');
-  if(reasonBox) reasonBox.innerHTML='🧠 '+reasoning+(signal!=='HOLD'?'<br><span style="color:var(--gold);">📍 Entry: '+fp(curAsset,entry)+' | R:R '+forecast.rr+'R | '+forecast.quality+'</span>':'');
-  
-  const lotEl=document.getElementById('mLot'); if(lotEl) lotEl.textContent=lot.toFixed(2);
-  const riskEl=document.getElementById('mRisk'); if(riskEl) riskEl.textContent=riskAmt;
-  const rewardEl=document.getElementById('mReward'); if(rewardEl) rewardEl.textContent=rewardAmt;
-  const slEl=document.getElementById('mSL'); if(slEl) slEl.textContent=sl?fp(curAsset,sl):'---';
-  const tpEl=document.getElementById('mTP'); if(tpEl) tpEl.textContent=tp?fp(curAsset,tp):'---';
-  const rrEl=document.getElementById('mRR'); if(rrEl) rrEl.textContent=forecast.rr+'R';
-  
-  const colors={BUY:'#10b981','SCALP-LONG':'#10b981',SELL:'#ef4444','SCALP-SHORT':'#ef4444',HOLD:'#f59e0b'};
-  const stratGrid=document.getElementById('stratGrid');
-  if(stratGrid){
-    stratGrid.innerHTML=votes.map(v=>`<div class="strat-tile ${v.signal!=='HOLD'?'strat-active':''}" style="border-color:${colors[v.signal]||'#f59e0b'}33;color:${colors[v.signal]||'#f59e0b'};"><div class="st-name">${v.icon} ${v.name}</div><div class="st-sig" style="color:${colors[v.signal]||'#f59e0b'};">${v.signal}</div><div class="st-conf" style="color:var(--sub);">${v.conf}%</div></div>`).join('');
-  }
-  const stratSummary=document.getElementById('stratSummary');
-  if(stratSummary) stratSummary.innerHTML='✅ '+buyCount+' Bullish | ❌ '+sellCount+' Bearish | ⚪ '+(totalStrats-buyCount-sellCount)+' Neutral | Score: <strong>'+weightedScore+'%</strong>';
-  
-  // S/R Zones
-  const srEl=document.getElementById('srZonesContent');
-  if(srEl){
-    const zones=d.srZones||[];
-    if(!zones.length){srEl.innerHTML='<span style="color:var(--sub);">No 3+ touch zones found.</span>';}
-    else{
-      const price=d.price;
-      const res=zones.filter(z=>z.level>price).sort((a,b)=>a.level-b.level).slice(0,4);
-      const sup=zones.filter(z=>z.level<=price).sort((a,b)=>b.level-a.level).slice(0,4);
-      let html='<div style="font-size:0.68rem;color:var(--sub);margin-bottom:8px;">'+zones.length+' zones with 3+ touches</div>';
-      if(res.length){ html+='<div style="color:var(--red);font-weight:700;font-size:0.65rem;margin:4px 0;">▲ RESISTANCE</div>'; res.forEach(z=>{html+=`<div style="display:flex;justify-content:space-between;padding:4px 8px;background:#080e1f;border-radius:6px;margin-bottom:3px;border-left:3px solid var(--red);"><span style="font-family:var(--fm);">${fp(curAsset,z.level)}</span><span style="color:var(--sub);">${z.tests}x</span></div>`;}); }
-      html+='<div style="text-align:center;padding:6px;color:var(--gold);font-weight:700;">📍 PRICE: '+fp(curAsset,price)+'</div>';
-      if(sup.length){ html+='<div style="color:var(--green);font-weight:700;font-size:0.65rem;margin:4px 0;">▼ SUPPORT</div>'; sup.forEach(z=>{html+=`<div style="display:flex;justify-content:space-between;padding:4px 8px;background:#080e1f;border-radius:6px;margin-bottom:3px;border-left:3px solid var(--green);"><span style="font-family:var(--fm);">${fp(curAsset,z.level)}</span><span style="color:var(--sub);">${z.tests}x</span></div>`;}); }
-      srEl.innerHTML=html;
-    }
-  }
-  
-  updateExecCard();
-  if(signal!=='HOLD'){
-    journal.unshift({id:Date.now(),time:new Date().toLocaleString(),asset:curAsset,tf:curTf,signal,entry,sl,tp,conf,strategy,result:null});
-    localStorage.setItem('qep_journal',JSON.stringify(journal));
-    renderJ('all');
-    toast('🔔 '+signal+' forecast @ '+fp(curAsset,entry)+' — '+conf+'%');
-  }
-  const openTradeBtn=document.getElementById('openTradeBtn');
-  if(openTradeBtn) openTradeBtn.disabled=signal==='HOLD'||!!activeTrade;
-  updateChart();
-  addLog('📊 '+curAsset+' '+signal+' forecast @ '+fp(curAsset,entry)+' | '+conf+'%','signal');
-  if(botRunning && signal!=='HOLD') botCheckSignalForTrade(signal, entry, sl, tp, conf, forecast);
-}
-
-function updateChart(){
-  if(!curAsset) return;
-  const tvM={XAUUSD:'OANDA:XAUUSD',BTCUSD:'BITSTAMP:BTCUSD',EURUSD:'FX:EURUSD',GBPUSD:'FX:GBPUSD',USDJPY:'FX:USDJPY',AUDUSD:'FX:AUDUSD',USDCAD:'FX:USDCAD',US30:'US30',NAS100:'NAS100'};
-  const iM={'1min':'1','5min':'5','15min':'15','1h':'60','4h':'240','1day':'1D'};
-  if(tvW)try{tvW.remove();}catch(e){}
-  const chartEl=document.getElementById('tvChart');
-  if(!chartEl) return;
-  chartEl.innerHTML='';
-  try{ tvW=new TradingView.widget({width:'100%',height:380,symbol:tvM[curAsset]||'FX:EURUSD',interval:iM[curTf]||'60',theme:'dark',style:'1',locale:'en',container_id:'tvChart',studies:['RSI@tv-basicstudies','MACD@tv-basicstudies']}); }catch(e){}
-}
-
-function updateExecCard(){
-  const noSig=document.getElementById('execNoSignal');
-  const body=document.getElementById('execSignalBody');
-  if(!noSig||!body) return;
-  if(!curSig||curSig.signal==='HOLD'||!curSig.price){ noSig.style.display='block'; body.style.display='none'; return; }
-  noSig.style.display='none'; body.style.display='block';
-  const s=curSig;
-  const isBuy=s.signal==='BUY'||s.signal==='SCALP-LONG';
-  const sigBadge=document.getElementById('execSigBadge');
-  if(sigBadge){sigBadge.textContent=s.signal; sigBadge.style.color=isBuy?'var(--green)':'var(--red)';}
-  const assetTf=document.getElementById('execAssetTf');
-  if(assetTf) assetTf.textContent=s.asset+' · '+s.tf;
-  const entryStatus=document.getElementById('execEntryStatus');
-  if(entryStatus) entryStatus.textContent='⏳ Entry: '+fp(s.asset,s.entry)+' ('+s.entryType+')';
-  const symEl=document.getElementById('execSymbol'); if(symEl) symEl.textContent=s.asset;
-  const stakeEl=document.getElementById('execStake'); if(stakeEl) stakeEl.textContent='$'+(curBal*(curRisk/100)).toFixed(2);
-  const slEl=document.getElementById('execSL'); if(slEl) slEl.textContent=s.sl?fp(s.asset,s.sl):'N/A';
-  const tpEl=document.getElementById('execTP'); if(tpEl) tpEl.textContent=s.tp?fp(s.asset,s.tp):'N/A';
-  const confBadge=document.getElementById('execConfBadge');
-  if(confBadge){ confBadge.textContent=s.conf+'% · '+s.strategy; confBadge.style.borderColor=s.conf>=70?'var(--green)':s.conf>=50?'var(--gold)':'var(--red)'; confBadge.style.color=s.conf>=70?'var(--green)':s.conf>=50?'var(--gold)':'var(--red)'; }
-}
-
-// ============================================================
-// TRADE MANAGER
-// ============================================================
-let tradeMonitorIv=null;
-
-function openTrade(signal,entry,sl,tp,asset,tf,lot){
-  if(activeTrade){toast('Close current trade first');return;}
-  activeTrade={signal,entry,sl,tp,asset,tf,lot,openTime:Date.now(),originalSL:sl,originalTP:tp,
-    breakEvenMoved:false,partialClosed:false,trailingActive:false,status:'OPEN',pnl:0,highWater:entry,lowWater:entry};
-  localStorage.setItem('qep_activeTrade',JSON.stringify(activeTrade));
-  renderTradeManager();
-  if(tradeMonitorIv) clearInterval(tradeMonitorIv);
-  tradeMonitorIv=setInterval(monitorTrade,5000);
-  addLog('✅ Trade OPENED: '+asset+' '+signal+' @ '+fp(asset,entry),'signal');
-  toast('✅ Trade opened');
-}
-
-function monitorTrade(){
-  if(!activeTrade||activeTrade.status!=='OPEN') return;
-  const price=curMkt.price||activeTrade.entry;
-  const isBuy=activeTrade.signal==='BUY'||activeTrade.signal==='SCALP-LONG';
-  const atr=curMkt.atr||Math.abs(activeTrade.originalTP-activeTrade.entry)/2.5||0.001;
-  const pips=isBuy?price-activeTrade.entry:activeTrade.entry-price;
-  if(isBuy) activeTrade.highWater=Math.max(activeTrade.highWater||price,price);
-  else activeTrade.lowWater=Math.min(activeTrade.lowWater||price,price);
-  if(!activeTrade.breakEvenMoved&&pips>=atr*1.0){ activeTrade.sl=activeTrade.entry; activeTrade.breakEvenMoved=true; toast('🔒 BE triggered'); }
-  if(pips>=atr*1.5){
-    activeTrade.trailingActive=true;
-    const newSL=isBuy?price-atr*0.8:price+atr*0.8;
-    if(isBuy&&newSL>activeTrade.sl) activeTrade.sl=newSL;
-    if(!isBuy&&newSL<activeTrade.sl) activeTrade.sl=newSL;
-  }
-  if(!activeTrade.partialClosed&&pips>=atr*1.0){activeTrade.partialClosed=true;toast('🎯 Partial TP');}
-  const slHit=isBuy?price<=activeTrade.sl:price>=activeTrade.sl;
-  if(slHit){closeTrade('SL',price);return;}
-  const tpHit=isBuy?price>=activeTrade.tp:price<=activeTrade.tp;
-  if(tpHit){closeTrade('TP',price);return;}
-  const isScalp=activeTrade.tf==='1min'||activeTrade.tf==='5min';
-  if(isScalp&&(Date.now()-activeTrade.openTime)/60000>15&&pips<=0){closeTrade('TIME',price);return;}
-  const pipVal=activeTrade.asset==='XAUUSD'?100:activeTrade.asset==='BTCUSD'?1:100000;
-  activeTrade.pnl=parseFloat((pips*activeTrade.lot*pipVal*(activeTrade.partialClosed?0.5:1)).toFixed(2));
-  localStorage.setItem('qep_activeTrade',JSON.stringify(activeTrade));
-  renderTradeManager();
-}
-
-function closeTrade(reason,closePrice){
-  if(!activeTrade) return;
-  const isBuy=activeTrade.signal==='BUY'||activeTrade.signal==='SCALP-LONG';
-  const pips=isBuy?closePrice-activeTrade.entry:activeTrade.entry-closePrice;
-  const pipVal=activeTrade.asset==='XAUUSD'?100:activeTrade.asset==='BTCUSD'?1:100000;
-  const pnl=parseFloat((pips*activeTrade.lot*pipVal).toFixed(2));
-  const result=pnl>0?'WIN':'LOSS';
-  journal.unshift({id:Date.now(),time:new Date().toLocaleString(),asset:activeTrade.asset,
-    tf:activeTrade.tf,signal:activeTrade.signal,entry:activeTrade.entry,
-    sl:activeTrade.originalSL,tp:activeTrade.originalTP,closePrice,result,pnl});
-  localStorage.setItem('qep_journal',JSON.stringify(journal));
-  activeTrade=null; localStorage.removeItem('qep_activeTrade');
-  if(tradeMonitorIv){clearInterval(tradeMonitorIv);tradeMonitorIv=null;}
-  renderTradeManager(); renderJ('all');
-  toast(result==='WIN'?'✅ WIN $'+pnl:'❌ LOSS $'+Math.abs(pnl));
-}
-
-function renderTradeManager(){
-  const el=document.getElementById('tradeManagerPanel');
-  if(!el) return;
-  if(!activeTrade){el.innerHTML='<div style="color:var(--sub);font-size:0.75rem;text-align:center;padding:14px;">No active trade.</div>';return;}
-  const t=activeTrade, price=curMkt.price||t.entry;
-  const isBuy=t.signal==='BUY'||t.signal==='SCALP-LONG';
-  const pnlColor=t.pnl>=0?'var(--green)':'var(--red)';
-  el.innerHTML=`<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:12px;"><div class="mtile"><div class="ml">Signal</div><div class="mv" style="color:${isBuy?'var(--green)':'var(--red)'};">${t.signal}</div></div><div class="mtile"><div class="ml">Entry</div><div class="mv">${fp(t.asset,t.entry)}</div></div><div class="mtile"><div class="ml">SL</div><div class="mv" style="color:var(--red);">${fp(t.asset,t.sl)}</div></div><div class="mtile"><div class="ml">TP</div><div class="mv" style="color:var(--green);">${fp(t.asset,t.tp)}</div></div></div><div style="display:flex;gap:8px;flex-wrap:wrap;font-size:0.75rem;"><span style="background:#1e2d4a;padding:4px 10px;border-radius:8px;">P&L: <strong style="color:${pnlColor};">$${t.pnl}</strong></span><span style="background:${t.breakEvenMoved?'#10b98133':'#1e2d4a'};padding:4px 10px;border-radius:8px;">BE: ${t.breakEvenMoved?'✅':'Pending'}</span><span style="background:${t.partialClosed?'#10b98133':'#1e2d4a'};padding:4px 10px;border-radius:8px;">Partial: ${t.partialClosed?'✅':'Pending'}</span><button class="btn btn-red btn-sm" onclick="closeTrade('MANUAL',${price})">🔴 Close</button></div>`;
-}
-
-function openTradeFromSignal(){
-  if(!curSig||curSig.signal==='HOLD'){toast('Generate a signal first');return;}
-  openTrade(curSig.signal,curSig.entry,curSig.sl,curSig.tp,curSig.asset,curSig.tf,
-    parseFloat(document.getElementById('mLot')?.textContent)||0.01);
-}
-
-function copyToClipboard(text,btn){
-  if(!text||text==='--'){toast('No value');return;}
-  if(navigator.clipboard&&navigator.clipboard.writeText){
-    navigator.clipboard.writeText(text).then(()=>{
-      if(btn){btn.textContent='✅ Copied!';btn.classList.add('copied');setTimeout(()=>{btn.textContent='📋 Copy';btn.classList.remove('copied');},1800);}
-      toast('✅ Copied');
-    }).catch(()=>fallbackCopy(text,btn));
-  } else fallbackCopy(text,btn);
-}
-function fallbackCopy(text,btn){const ta=document.createElement('textarea');ta.value=text;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();try{document.execCommand('copy');toast('✅ Copied');}catch(e){toast('❌ Copy failed');}document.body.removeChild(ta);}
-function copyAllOrder(){
-  if(!curSig||curSig.signal==='HOLD'){toast('No signal');return;}
-  const s=curSig;
-  const dir=(s.signal==='BUY'||s.signal==='SCALP-LONG')?'CALL':'PUT';
-  const msg='SYMBOL: '+s.asset+'\nACTION: '+dir+'\nSTAKE: $'+(curBal*(curRisk/100)).toFixed(2)+'\nENTRY: '+fp(s.asset,s.entry)+'\nSL: '+(s.sl?fp(s.asset,s.sl):'N/A')+'\nTP: '+(s.tp?fp(s.asset,s.tp):'N/A')+'\nCONF: '+s.conf+'%';
-  copyToClipboard(msg,document.getElementById('copyAllBtn'));
-}
-
-// ============================================================
-// JOURNAL
-// ============================================================
-function renderJ(f){
-  let data=journal;
-  if(f&&f!=='all') data=data.filter(d=>d.signal===f);
-  const wins=journal.filter(d=>d.result==='WIN').length;
-  const loss=journal.filter(d=>d.result==='LOSS').length;
-  const totalEl=document.getElementById('jTotal'); if(totalEl) totalEl.textContent=journal.length;
-  const winsEl=document.getElementById('jWins'); if(winsEl) winsEl.textContent=wins;
-  const lossEl=document.getElementById('jLoss'); if(lossEl) lossEl.textContent=loss;
-  const wrEl=document.getElementById('jWR'); if(wrEl) wrEl.textContent=wins+loss>0?Math.round(wins/(wins+loss)*100)+'%':'--';
-  const bodyEl=document.getElementById('jBody');
-  if(!bodyEl) return;
-  if(!data.length){bodyEl.innerHTML='<tr><td colspan="10" style="text-align:center;padding:20px;color:var(--muted);">No entries.</td></tr>';return;}
-  bodyEl.innerHTML=data.map(d=>{
-    const sigClass='sig-chip sc-'+d.signal;
-    const resultColor=d.result==='WIN'?'var(--green)':d.result==='LOSS'?'var(--red)':'var(--sub)';
-    return `<tr><td style="font-size:0.62rem;">${d.time}</td><td>${d.asset}</td><td>${d.tf}</td><td><span class="${sigClass}">${d.signal}</span></td><td style="font-family:var(--fm);">${fp(d.asset,d.entry)}</td><td style="font-family:var(--fm);color:var(--red);">${d.sl?fp(d.asset,d.sl):'--'}</td><td style="font-family:var(--fm);color:var(--green);">${d.tp?fp(d.asset,d.tp):'--'}</td><td>${d.conf||'--'}%</td><td style="font-size:0.62rem;">${(d.strategy||'').substring(0,20)}</td><td style="color:${resultColor};font-weight:700;">${d.result||'PENDING'}</td></tr>`;
-  }).join('');
-}
-
-function clearJ(){if(confirm('Clear all?')){journal=[];localStorage.setItem('qep_journal','[]');renderJ('all');}}
 
 // ============================================================
 // API TESTS
 // ============================================================
-async function testGroqKey(key){
-  const resultEl=document.getElementById('groqTestResult');
-  if(!resultEl) return false;
-  if(!key || key.length<10){ resultEl.innerHTML='❌ Invalid key'; resultEl.style.color='var(--red)'; return false; }
-  resultEl.innerHTML='🔍 Testing...'; resultEl.style.color='var(--sub)';
-  try{
-    const r=await fetch('https://api.groq.com/openai/v1/chat/completions',{
-      method:'POST',
-      headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},
-      body:JSON.stringify({model:'llama3-8b-8192',max_tokens:50,messages:[{role:'user',content:'Say OK'}]})
-    });
-    const j=await r.json();
-    if(j.choices && j.choices[0]){
-      resultEl.innerHTML='✅ Valid! Response: "'+j.choices[0].message.content+'"';
-      resultEl.style.color='var(--green)';
-      groqKey=key; localStorage.setItem('qep_groq',key); updateGroqStatus(); return true;
-    } else {
-      resultEl.innerHTML='❌ Invalid key: '+(j.error?.message||'Unknown');
-      resultEl.style.color='var(--red)'; return false;
+
+async function testGroqKey(key) {
+    const resultEl = document.getElementById('groqTestResult');
+    if (!resultEl) return false;
+    if (!key || key.length < 10) { resultEl.innerHTML = '❌ Invalid key'; resultEl.style.color = 'var(--red)'; return false; }
+    resultEl.innerHTML = '🔍 Testing...';
+    resultEl.style.color = 'var(--sub)';
+    try {
+        const r = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + key },
+            body: JSON.stringify({ model: 'llama3-8b-8192', max_tokens: 50, messages: [{ role: 'user', content: 'Say OK' }] })
+        });
+        const j = await r.json();
+        if (j.choices && j.choices[0]) {
+            resultEl.innerHTML = '✅ Valid! Response: "' + j.choices[0].message.content + '"';
+            resultEl.style.color = 'var(--green)';
+            groqKey = key;
+            localStorage.setItem('qep_groq', key);
+            return true;
+        } else {
+            resultEl.innerHTML = '❌ Invalid key: ' + (j.error?.message || 'Unknown');
+            resultEl.style.color = 'var(--red)';
+            return false;
+        }
+    } catch (e) {
+        resultEl.innerHTML = '❌ Network error: ' + e.message;
+        resultEl.style.color = 'var(--red)';
+        return false;
     }
-  }catch(e){ resultEl.innerHTML='❌ Network error: '+e.message; resultEl.style.color='var(--red)'; return false; }
-}
-
-function updateGroqStatus(){
-  const pill=document.getElementById('groqStatusPill');
-  if(!pill) return;
-  if(groqKey && groqKey.startsWith('gsk_')){ pill.textContent='🤖 GROQ: ON'; pill.className='pill pill-purple'; }
-  else { pill.textContent='🤖 GROQ: OFF'; pill.className='pill pill-muted'; }
-}
-
-async function testTwelveKey(key){
-  const resultEl=document.getElementById('twelveTestResult');
-  if(!resultEl) return false;
-  if(!key || key.length<5){ resultEl.innerHTML='❌ Enter a key'; resultEl.style.color='var(--red)'; return false; }
-  resultEl.innerHTML='🔍 Testing...'; resultEl.style.color='var(--sub)';
-  try{
-    const r=await fetch('https://api.twelvedata.com/price?symbol=EUR/USD&apikey='+key);
-    const j=await r.json();
-    if(j.price){
-      resultEl.innerHTML='✅ Valid! EUR/USD: '+parseFloat(j.price).toFixed(5);
-      resultEl.style.color='var(--green)';
-      twelveKey=key; localStorage.setItem('qep_twelve',key); updateDataStatus(true); return true;
-    } else if(j.code===429){ resultEl.innerHTML='⚠️ Rate limit'; resultEl.style.color='var(--gold)'; return false; }
-    else { resultEl.innerHTML='❌ Invalid key'; resultEl.style.color='var(--red)'; return false; }
-  }catch(e){ resultEl.innerHTML='❌ Network error: '+e.message; resultEl.style.color='var(--red)'; return false; }
 }
 
 async function testDerivConnection() {
-  const resultEl = document.getElementById('derivTestResult');
-  if(resultEl){resultEl.innerHTML='🔍 Testing connection...'; resultEl.style.color='var(--sub)';}
-  const success = await connectDeriv();
-  if(resultEl){
-    if(success){
-      resultEl.innerHTML='✅ Connected! Balance: '+derivBalance+' '+derivCurrency;
-      resultEl.style.color='var(--green)';
-    } else {
-      resultEl.innerHTML='❌ Connection failed. Check App ID and Token.';
-      resultEl.style.color='var(--red)';
+    const resultEl = document.getElementById('derivTestResult');
+    if (resultEl) { resultEl.innerHTML = '🔍 Testing connection...'; resultEl.style.color = 'var(--sub)'; }
+    const success = await connectDeriv();
+    if (resultEl) {
+        if (success) {
+            resultEl.innerHTML = '✅ Connected! Balance: ' + derivBalance + ' ' + derivCurrency + ' | Platform: ' + (derivPlatform || 'deriv').toUpperCase();
+            resultEl.style.color = 'var(--green)';
+        } else {
+            resultEl.innerHTML = '❌ Connection failed. Check App ID and Token.';
+            resultEl.style.color = 'var(--red)';
+        }
     }
-  }
-  return success;
+    return success;
 }
 
 function saveDerivConfig() {
-  const appId = document.getElementById('derivAppId')?.value?.trim() || '';
-  const token = document.getElementById('derivApiKey')?.value?.trim() || '';
-  const resultEl = document.getElementById('derivTestResult');
-  if (appId) { derivAppId = appId; localStorage.setItem('qep_deriv_app_id', appId); }
-  if (token) { derivApiKey = token; localStorage.setItem('qep_deriv_key', token); }
-  if(resultEl){resultEl.innerHTML='✅ Config saved! Click "Test Connection" to verify.'; resultEl.style.color='var(--green)';}
-  toast('✅ Deriv config saved');
-  botLog('📝 Deriv config saved', 'bot-info');
+    const appId = document.getElementById('derivAppId')?.value?.trim() || '';
+    const token = document.getElementById('derivApiKey')?.value?.trim() || '';
+    const resultEl = document.getElementById('derivTestResult');
+    if (appId) { derivAppId = appId; localStorage.setItem('qep_deriv_app_id', appId); }
+    if (token) { derivApiKey = token; localStorage.setItem('qep_deriv_key', token); }
+    if (resultEl) { resultEl.innerHTML = '✅ Config saved! Click "Test Connection" to verify.'; resultEl.style.color = 'var(--green)'; }
+    toast('✅ Deriv config saved');
+    botLog('📝 Deriv config saved', 'bot-info');
 }
 
 // ============================================================
-// BOT ENGINE
+// UI HELPERS
 // ============================================================
-let botConfig = { riskPct: 1.5, maxTrades: 5, minConfidence: 65, duration: 5, useSL: true, useTP: true, autoConfirm: true };
 
-function loadBotConfig() {
-  const risk=document.getElementById('botRiskPct'); if(risk) botConfig.riskPct=parseFloat(risk.value)||1.5;
-  const maxTrades=document.getElementById('botMaxTrades'); if(maxTrades) botConfig.maxTrades=parseInt(maxTrades.value)||5;
-  const minConf=document.getElementById('botMinConf'); if(minConf) botConfig.minConfidence=parseInt(minConf.value)||65;
-  const duration=document.getElementById('botDuration'); if(duration) botConfig.duration=parseInt(duration.value)||5;
-  const sl=document.getElementById('botUseSL'); if(sl) botConfig.useSL=sl.checked;
-  const tp=document.getElementById('botUseTP'); if(tp) botConfig.useTP=tp.checked;
-  const auto=document.getElementById('botAutoConfirm'); if(auto) botConfig.autoConfirm=auto.checked;
+function renderSessions() {
+    const h = new Date().getUTCHours();
+    const lon = h >= 8 && h < 17, ny = h >= 13 && h < 22, tok = h >= 0 && h < 9;
+    const pill = document.getElementById('sessionPill');
+    if (!pill) return;
+    if (lon && ny) { pill.className = 'pill pill-green'; pill.textContent = '⚡ LDN+NY'; } else if (lon) { pill.className = 'pill pill-blue'; pill.textContent = '🔵 LONDON'; } else if (ny) { pill.className = 'pill pill-green'; pill.textContent = '🟢 NY'; } else if (tok) { pill.className = 'pill pill-purple'; pill.textContent = '🟣 TOKYO'; } else { pill.className = 'pill pill-muted'; pill.textContent = '⚪ OFF-HRS'; }
 }
 
-function botCheckSignalForTrade(signal, entry, sl, tp, confidence, forecast) {
-  if (!botRunning || botOrderPending) return;
-  loadBotConfig();
-  if (confidence < botConfig.minConfidence) { botLog('⏭ Confidence '+confidence+'% < '+botConfig.minConfidence+'%', 'bot-warn'); return; }
-  const today = new Date().toDateString();
-  if (botLastTradeDate !== today) { botDailyTrades = 0; botLastTradeDate = today; }
-  if (botDailyTrades >= botConfig.maxTrades) { botLog('⏸ Daily limit reached', 'bot-warn'); return; }
-  if ((botConfig.useSL && !sl) || (botConfig.useTP && !tp)) { botLog('⏭ Missing SL/TP', 'bot-warn'); return; }
-  if (!derivWs || derivWs.readyState !== WebSocket.OPEN) { botLog('❌ Not connected to Deriv', 'bot-error'); return; }
-  showBotOrderPreview(signal, entry, sl, tp, confidence, forecast);
+function toggleAuto() {
+    if (autoIv) { clearInterval(autoIv); autoIv = null; const btn = document.getElementById('autoBtn'); if (btn) btn.textContent = '🔄 Auto (30min)'; } else { autoIv = setInterval(generateSignal, 30 * 60 * 1000); generateSignal(); const btn = document.getElementById('autoBtn'); if (btn) btn.textContent = '⏹ Stop Auto'; }
 }
 
-function showBotOrderPreview(signal, entry, sl, tp, confidence, forecast) {
-  const preview=document.getElementById('botOrderPreview');
-  if(!preview) return;
-  botOrderPending=true;
-  const assetEl=document.getElementById('botPreviewAsset'); if(assetEl) assetEl.textContent=curAsset;
-  const signalEl=document.getElementById('botPreviewSignal'); if(signalEl) signalEl.textContent=signal;
-  const entryEl=document.getElementById('botPreviewEntry'); if(entryEl) entryEl.textContent=fp(curAsset,entry);
-  const slEl=document.getElementById('botPreviewSL'); if(slEl) slEl.textContent=sl?fp(curAsset,sl):'N/A';
-  const tpEl=document.getElementById('botPreviewTP'); if(tpEl) tpEl.textContent=tp?fp(curAsset,tp):'N/A';
-  const stake=curBal*(botConfig.riskPct/100);
-  const stakeEl=document.getElementById('botPreviewStake'); if(stakeEl) stakeEl.textContent='$'+stake.toFixed(2);
-  const durEl=document.getElementById('botPreviewDuration'); if(durEl) durEl.textContent=botConfig.duration+' sec';
-  const confEl=document.getElementById('botPreviewConf'); if(confEl) confEl.textContent=confidence+'%';
-  preview.style.display='block';
-  botLog('📋 Preview for '+signal+' @ '+fp(curAsset,entry), 'bot-info');
-  if(botConfig.autoConfirm) setTimeout(()=>{ botExecuteTrade(signal, entry, sl, tp, confidence, forecast); }, 3000);
+function toggleScalp() {
+    if (scalpIv) { clearInterval(scalpIv); scalpIv = null; const btn = document.getElementById('scalpBtn'); if (btn) btn.textContent = '⚡ Scalp Mode'; } else { scalpIv = setInterval(generateSignal, 15000); generateSignal(); const btn = document.getElementById('scalpBtn'); if (btn) btn.textContent = '⏹ Stop Scalp'; }
 }
 
-async function botExecuteTrade(signal, entry, sl, tp, confidence, forecast) {
-  if (!botRunning) { botOrderPending=false; const p=document.getElementById('botOrderPreview'); if(p) p.style.display='none'; return; }
-  const result=await executeDerivTrade(signal, entry, sl, tp, confidence);
-  botOrderPending=false;
-  const p=document.getElementById('botOrderPreview'); if(p) p.style.display='none';
-  if(result.success){ botLog('✅ Trade executed!', 'bot-success'); toast('🤖 Bot executed '+signal+' trade!'); }
-  else { botLog('❌ Trade failed: '+(result.error||'Unknown'), 'bot-error'); toast('❌ Trade failed'); }
+function toggleChat() { const m = document.getElementById('chatModal'); if (m) m.classList.toggle('hidden'); }
+
+async function sendChat() {
+    const inp = document.getElementById('chatInp');
+    if (!inp) return;
+    const q = inp.value.trim();
+    if (!q) return;
+    inp.value = '';
+    addBbl(q, true);
+    const ld = addBbl('🤔 Thinking...', false, true);
+    let ans = localAI(q);
+    if (groqKey && groqKey.startsWith('gsk_')) { try { ans = await groqAI(q); } catch (e) {} }
+    if (ld) ld.remove();
+    addBbl(ans, false);
 }
 
-async function botSimulateTrade() {
-  if(!curSig||curSig.signal==='HOLD'){toast('Generate a signal first');return;}
-  if(!derivWs || derivWs.readyState !== WebSocket.OPEN){toast('Connect to Deriv first');return;}
-  botLog('🎯 Simulating trade', 'bot-info');
-  const preview=document.getElementById('botOrderPreview');
-  if(preview){
-    const assetEl=document.getElementById('botPreviewAsset'); if(assetEl) assetEl.textContent=curAsset;
-    const signalEl=document.getElementById('botPreviewSignal'); if(signalEl) signalEl.textContent=curSig.signal;
-    const entryEl=document.getElementById('botPreviewEntry'); if(entryEl) entryEl.textContent=fp(curAsset,curSig.entry);
-    const slEl=document.getElementById('botPreviewSL'); if(slEl) slEl.textContent=curSig.sl?fp(curAsset,curSig.sl):'N/A';
-    const tpEl=document.getElementById('botPreviewTP'); if(tpEl) tpEl.textContent=curSig.tp?fp(curAsset,curSig.tp):'N/A';
-    const stake=curBal*(botConfig.riskPct/100);
-    const stakeEl=document.getElementById('botPreviewStake'); if(stakeEl) stakeEl.textContent='$'+stake.toFixed(2);
-    const durEl=document.getElementById('botPreviewDuration'); if(durEl) durEl.textContent=botConfig.duration+' sec';
-    const confEl=document.getElementById('botPreviewConf'); if(confEl) confEl.textContent=curSig.conf+'%';
-    preview.style.display='block';
-    botOrderPending=true;
-  }
-  toast('📋 Simulated preview ready');
+function addBbl(text, isUser, temp = false) {
+    const a = document.getElementById('chatMsgs');
+    if (!a) return null;
+    const d = document.createElement('div');
+    d.className = 'bbl ' + (isUser ? 'user' : 'ai');
+    if (temp) d.style.opacity = '0.6';
+    d.innerHTML = text.replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+    a.appendChild(d);
+    a.scrollTop = a.scrollHeight;
+    return d;
 }
 
-async function botStart() {
-  if(botRunning){toast('Already running');return;}
-  loadBotConfig();
-  if(!derivAppId || !derivApiKey){toast('Configure Deriv App ID and Token in Settings'); botLog('❌ No config', 'bot-error'); return; }
-  if(!derivWs || derivWs.readyState !== WebSocket.OPEN){ toast('Connecting to Deriv...'); const connected=await connectDeriv(); if(!connected){toast('Connection failed'); return; } }
-  const today=new Date().toDateString(); if(botLastTradeDate!==today){botDailyTrades=0; botLastTradeDate=today;}
-  botRunning=true;
-  const dot=document.getElementById('botStatusDot'); if(dot) dot.className='bot-status-dot on';
-  const text=document.getElementById('botStatusText'); if(text) text.textContent='Bot: RUNNING';
-  const startBtn=document.getElementById('botStartBtn'); if(startBtn) startBtn.disabled=true;
-  const stopBtn=document.getElementById('botStopBtn'); if(stopBtn) stopBtn.disabled=false;
-  botSignalCheckInterval=setInterval(()=>{ if(curSig&&curSig.signal!=='HOLD'&&!botOrderPending) botCheckSignalForTrade(curSig.signal,curSig.entry,curSig.sl,curSig.tp,curSig.conf,null); }, 30000);
-  botLog('🚀 Bot started', 'bot-success');
-  toast('🤖 Bot started');
-  if(curSig&&curSig.signal!=='HOLD') setTimeout(()=>{ botCheckSignalForTrade(curSig.signal,curSig.entry,curSig.sl,curSig.tp,curSig.conf,null); }, 2000);
+function localAI(q) {
+    const ql = q.toLowerCase();
+    if (ql.includes('forecast') || ql.includes('entry')) {
+        return '📌 **Forecast**\n' + curSig.signal + ' @ ' + fp(curSig.asset, curSig.entry) + ' (' + curSig.entryType + ') | ' + curSig.conf + '%';
+    }
+    if (ql.includes('weighted')) {
+        return '📊 **Weighted Score**: ' + curSig.weightedScore + '% | Confidence: ' + curSig.conf + '%';
+    }
+    if (ql.includes('zone') || ql.includes('s/r')) {
+        return '🏗️ **S/R Zones**: ' + (curMkt.srZones ? curMkt.srZones.length + ' zones with 2+ touches' : 'No zones');
+    }
+    if (ql.includes('api')) {
+        return '🔑 **API Status**:\nDeriv: ' + (derivAppId ? '✅ App ID' : '❌') + ' | ' + (derivApiKey ? '✅ Token' : '❌') + (derivWs?.readyState === 1 ? ' 🔗 Connected' : '');
+    }
+    if (ql.includes('bot') || ql.includes('deriv')) {
+        return '🤖 **Bot**: ' + (botRunning ? '🟢 RUNNING' : '🔴 STOPPED') + ' | Trades: ' + botTradeCount + ' | Daily: ' + botDailyTrades + '/' + botConfig.maxTrades;
+    }
+    if (ql.includes('account')) {
+        return '📊 **Account**: ' + (derivPlatform ? derivPlatform.toUpperCase() : 'None') + ' | Type: ' + (derivAccountType || 'None') + ' | Balance: ' + derivBalance + ' ' + derivCurrency;
+    }
+    return '🤖 Ask about: forecast, weighted scoring, S/R zones, API status, account, or the bot.';
 }
 
-function botStop() {
-  if(!botRunning){toast('Not running');return;}
-  botRunning=false;
-  if(botSignalCheckInterval){clearInterval(botSignalCheckInterval); botSignalCheckInterval=null;}
-  botOrderPending=false;
-  const p=document.getElementById('botOrderPreview'); if(p) p.style.display='none';
-  const dot=document.getElementById('botStatusDot'); if(dot) dot.className='bot-status-dot off';
-  const text=document.getElementById('botStatusText'); if(text) text.textContent='Bot: STOPPED';
-  const startBtn=document.getElementById('botStartBtn'); if(startBtn) startBtn.disabled=false;
-  const stopBtn=document.getElementById('botStopBtn'); if(stopBtn) stopBtn.disabled=true;
-  botLog('⏹ Bot stopped', 'bot-warn');
-  toast('⏹ Bot stopped');
-}
-
-function botClearLog(){ const box=document.getElementById('botLogBox'); if(box){box.innerHTML='<div style="color:var(--muted);text-align:center;padding:20px;">Log cleared.</div>'; botLogs=[]; } }
-function botCancelPreview(){ botOrderPending=false; const p=document.getElementById('botOrderPreview'); if(p) p.style.display='none'; botLog('✕ Preview cancelled', 'bot-info'); }
-
-function renderSessions(){
-  const h=new Date().getUTCHours();
-  const lon=h>=8&&h<17, ny=h>=13&&h<22, tok=h>=0&&h<9;
-  const pill=document.getElementById('sessionPill');
-  if(!pill) return;
-  if(lon&&ny){pill.className='pill pill-green'; pill.textContent='⚡ LDN+NY';}
-  else if(lon){pill.className='pill pill-blue'; pill.textContent='🔵 LONDON';}
-  else if(ny){pill.className='pill pill-green'; pill.textContent='🟢 NY';}
-  else if(tok){pill.className='pill pill-purple'; pill.textContent='🟣 TOKYO';}
-  else{pill.className='pill pill-muted'; pill.textContent='⚪ OFF-HRS';}
-}
-
-function toggleAuto(){
-  if(autoIv){clearInterval(autoIv); autoIv=null; const btn=document.getElementById('autoBtn'); if(btn) btn.textContent='🔄 Auto (30min)';}
-  else{autoIv=setInterval(refreshSignal,30*60*1000); refreshSignal(); const btn=document.getElementById('autoBtn'); if(btn) btn.textContent='⏹ Stop Auto';}
-}
-function toggleScalp(){
-  if(scalpIv){clearInterval(scalpIv); scalpIv=null; const btn=document.getElementById('scalpBtn'); if(btn) btn.textContent='⚡ Scalp Mode';}
-  else{scalpIv=setInterval(refreshSignal,15000); refreshSignal(); const btn=document.getElementById('scalpBtn'); if(btn) btn.textContent='⏹ Stop Scalp';}
-}
-
-function toggleChat(){ const m=document.getElementById('chatModal'); if(m) m.classList.toggle('hidden'); }
-async function sendChat(){
-  const inp=document.getElementById('chatInp'); if(!inp) return;
-  const q=inp.value.trim(); if(!q) return;
-  inp.value=''; addBbl(q,true);
-  const ld=addBbl('🤔 Thinking...',false,true);
-  let ans=localAI(q);
-  if(groqKey && groqKey.startsWith('gsk_')){ try{ ans=await groqAI(q); }catch(e){} }
-  if(ld) ld.remove();
-  addBbl(ans,false);
-}
-function addBbl(text,isUser,temp=false){
-  const a=document.getElementById('chatMsgs'); if(!a) return null;
-  const d=document.createElement('div');
-  d.className='bbl '+(isUser?'user':'ai');
-  if(temp)d.style.opacity='0.6';
-  d.innerHTML=text.replace(/\n/g,'<br>').replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>');
-  a.appendChild(d); a.scrollTop=a.scrollHeight;
-  return d;
-}
-function localAI(q){
-  const ql=q.toLowerCase();
-  if(ql.includes('forecast')||ql.includes('entry')) return '📌 **Forecast**\n'+curSig.signal+' @ '+fp(curSig.asset,curSig.entry)+' ('+curSig.entryType+') | '+curSig.conf+'%';
-  if(ql.includes('weighted')) return '📊 **Weighted Score**: '+curSig.weightedScore+'% | Confidence: '+curSig.conf+'%';
-  if(ql.includes('zone')||ql.includes('s/r')) return '🏗️ **S/R Zones**: '+(curMkt.srZones?curMkt.srZones.length+' zones with 3+ touches':'No zones');
-  if(ql.includes('api')) return '🔑 **API Status**:\nTwelve Data: '+(twelveKey?'✅':'❌')+'\nGroq: '+(groqKey?'✅':'❌')+'\nDeriv: '+(derivAppId?'✅ App ID':'❌')+' | '+(derivApiKey?'✅ Token':'❌')+(derivWs?.readyState===1?' 🔗 Connected':'');
-  if(ql.includes('bot')||ql.includes('deriv')) return '🤖 **Bot**: '+(botRunning?'🟢 RUNNING':'🔴 STOPPED')+' | Trades: '+botTradeCount+' | Daily: '+botDailyTrades+'/'+botConfig.maxTrades;
-  return '🤖 Ask about: forecast, weighted scoring, S/R zones, API status, or the bot.';
-}
-async function groqAI(q){
-  const sys='You are Quantum Edge Pro AI. Current: '+curSig.asset+' '+curSig.signal+' @ '+curSig.entry+' | Conf '+curSig.conf+'%. Be concise.';
-  const r=await fetch('https://api.groq.com/openai/v1/chat/completions',{
-    method:'POST',
-    headers:{'Content-Type':'application/json','Authorization':'Bearer '+groqKey},
-    body:JSON.stringify({model:'llama3-8b-8192',max_tokens:300,messages:[{role:'system',content:sys},{role:'user',content:q}]})
-  });
-  const d=await r.json();
-  if(d.choices) return d.choices[0].message.content;
-  throw new Error('Groq error');
+async function groqAI(q) {
+    const sys = 'You are Quantum Edge Pro AI. Current: ' + curSig.asset + ' ' + curSig.signal + ' @ ' + curSig.entry + ' | Conf ' + curSig.conf + '%. Be concise.';
+    const r = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + groqKey },
+        body: JSON.stringify({ model: 'llama3-8b-8192', max_tokens: 300, messages: [{ role: 'system', content: sys }, { role: 'user', content: q }] })
+    });
+    const d = await r.json();
+    if (d.choices) return d.choices[0].message.content;
+    throw new Error('Groq error');
 }
 
 // ============================================================
 // INIT
 // ============================================================
-document.addEventListener('DOMContentLoaded',function(){
-  if(groqKey){ const inp=document.getElementById('groqInp'); if(inp) inp.value=groqKey; updateGroqStatus(); }
-  if(twelveKey){ const inp=document.getElementById('twelveInp'); if(inp) inp.value=twelveKey; testTwelveKey(twelveKey); }
-  if(derivAppId){ const inp=document.getElementById('derivAppId'); if(inp) inp.value=derivAppId; }
-  if(derivApiKey){ const inp=document.getElementById('derivApiKey'); if(inp) inp.value=derivApiKey; }
-  
-  // Tabs
-  document.querySelectorAll('.tab[data-tab]').forEach(btn=>{
-    btn.addEventListener('click',function(){
-      const name=this.getAttribute('data-tab');
-      document.querySelectorAll('.page').forEach(p=>p.classList.remove('on'));
-      document.querySelectorAll('.tab').forEach(b=>b.classList.remove('on'));
-      const page=document.getElementById('page-'+name); if(page) page.classList.add('on');
-      this.classList.add('on');
-      if(name==='journal') renderJ('all');
-      if(name==='bot'){
-        const dot=document.getElementById('botStatusDot'); if(dot) dot.className='bot-status-dot '+(botRunning?'on':'off');
-        const text=document.getElementById('botStatusText'); if(text) text.textContent=botRunning?'Bot: RUNNING':'Bot: STOPPED';
-        const startBtn=document.getElementById('botStartBtn'); if(startBtn) startBtn.disabled=botRunning;
-        const stopBtn=document.getElementById('botStopBtn'); if(stopBtn) stopBtn.disabled=!botRunning;
-        const count=document.getElementById('botTradeCount'); if(count) count.textContent='📊 Trades: '+botTradeCount;
-      }
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Load saved config
+    if (derivAppId) { const inp = document.getElementById('derivAppId'); if (inp) inp.value = derivAppId; }
+    if (derivApiKey) { const inp = document.getElementById('derivApiKey'); if (inp) inp.value = derivApiKey; }
+    if (groqKey) { const inp = document.getElementById('groqInp'); if (inp) inp.value = groqKey; }
+    
+    // Tabs
+    document.querySelectorAll('.tab[data-tab]').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const name = this.getAttribute('data-tab');
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('on'));
+            document.querySelectorAll('.tab').forEach(b => b.classList.remove('on'));
+            const page = document.getElementById('page-' + name);
+            if (page) page.classList.add('on');
+            this.classList.add('on');
+            if (name === 'journal') renderJ('all');
+            if (name === 'bot') {
+                const dot = document.getElementById('botStatusDot');
+                if (dot) dot.className = 'bot-status-dot ' + (botRunning ? 'on' : 'off');
+                const text = document.getElementById('botStatusText');
+                if (text) text.textContent = botRunning ? 'Bot: RUNNING' : 'Bot: STOPPED';
+                const startBtn = document.getElementById('botStartBtn');
+                if (startBtn) startBtn.disabled = botRunning;
+                const stopBtn = document.getElementById('botStopBtn');
+                if (stopBtn) stopBtn.disabled = !botRunning;
+                const count = document.getElementById('botTradeCount');
+                if (count) count.textContent = '📊 Trades: ' + botTradeCount;
+            }
+        });
     });
-  });
-  
-  // Signal buttons
-  const genBtn=document.getElementById('genBtn'); if(genBtn) genBtn.addEventListener('click', refreshSignal);
-  const autoBtn=document.getElementById('autoBtn'); if(autoBtn) autoBtn.addEventListener('click', toggleAuto);
-  const scalpBtn=document.getElementById('scalpBtn'); if(scalpBtn) scalpBtn.addEventListener('click', toggleScalp);
-  const openTradeBtn=document.getElementById('openTradeBtn'); if(openTradeBtn) openTradeBtn.addEventListener('click', openTradeFromSignal);
-  const clearJBtn=document.getElementById('clearJBtn'); if(clearJBtn) clearJBtn.addEventListener('click', clearJ);
-  
-  // Groq
-  const saveGroq=document.getElementById('saveGroqBtn'); if(saveGroq) saveGroq.addEventListener('click', async function(){ const k=document.getElementById('groqInp')?.value.trim(); if(!k){toast('Enter key');return;} await testGroqKey(k); if(groqKey) toast('✅ Saved'); });
-  const testGroq=document.getElementById('testGroqBtn'); if(testGroq) testGroq.addEventListener('click', async function(){ const k=document.getElementById('groqInp')?.value.trim(); if(!k){toast('Enter key');return;} await testGroqKey(k); });
-  
-  // Twelve
-  const saveTwelve=document.getElementById('saveTwelveBtn'); if(saveTwelve) saveTwelve.addEventListener('click', async function(){ const k=document.getElementById('twelveInp')?.value.trim(); if(!k){toast('Enter key');return;} await testTwelveKey(k); if(twelveKey) toast('✅ Saved'); });
-  const testTwelve=document.getElementById('testTwelveBtn'); if(testTwelve) testTwelve.addEventListener('click', async function(){ const k=document.getElementById('twelveInp')?.value.trim(); if(!k){toast('Enter key');return;} await testTwelveKey(k); });
-  
-  // Deriv
-  const saveDeriv=document.getElementById('saveDerivBtn'); if(saveDeriv) saveDeriv.addEventListener('click', saveDerivConfig);
-  const testDeriv=document.getElementById('testDerivBtn'); if(testDeriv) testDeriv.addEventListener('click', testDerivConnection);
-  
-  // Bot
-  const startBtn=document.getElementById('botStartBtn'); if(startBtn) startBtn.addEventListener('click', botStart);
-  const stopBtn=document.getElementById('botStopBtn'); if(stopBtn) stopBtn.addEventListener('click', botStop);
-  const testBtn=document.getElementById('botTestBtn'); if(testBtn) testBtn.addEventListener('click', testDerivConnection);
-  const simBtn=document.getElementById('botSimulateBtn'); if(simBtn) simBtn.addEventListener('click', botSimulateTrade);
-  const clearBtn=document.getElementById('botClearLogBtn'); if(clearBtn) clearBtn.addEventListener('click', botClearLog);
-  const execBtn=document.getElementById('botExecuteBtn'); if(execBtn) execBtn.addEventListener('click', function(){ if(!curSig||curSig.signal==='HOLD'){toast('No signal');return;} botExecuteTrade(curSig.signal,curSig.entry,curSig.sl,curSig.tp,curSig.conf,null); });
-  const cancelBtn=document.getElementById('botCancelPreviewBtn'); if(cancelBtn) cancelBtn.addEventListener('click', botCancelPreview);
-  
-  // Bot config
-  document.querySelectorAll('#botRiskPct, #botMaxTrades, #botMinConf, #botDuration').forEach(el=>{ if(el) el.addEventListener('change', loadBotConfig); });
-  document.querySelectorAll('#botUseSL, #botUseTP, #botAutoConfirm').forEach(el=>{ if(el) el.addEventListener('change', loadBotConfig); });
-  
-  // Copy
-  const copyAll=document.getElementById('copyAllBtn'); if(copyAll) copyAll.addEventListener('click', copyAllOrder);
-  document.querySelectorAll('.exec-copy-btn').forEach(btn=>{
-    btn.addEventListener('click',function(){
-      const id=this.getAttribute('data-copy');
-      const val=document.getElementById(id)?.textContent?.trim()||'';
-      copyToClipboard(val,this);
+    
+    // Signal buttons
+    const genBtn = document.getElementById('genBtn');
+    if (genBtn) genBtn.addEventListener('click', generateSignal);
+    const autoBtn = document.getElementById('autoBtn');
+    if (autoBtn) autoBtn.addEventListener('click', toggleAuto);
+    const scalpBtn = document.getElementById('scalpBtn');
+    if (scalpBtn) scalpBtn.addEventListener('click', toggleScalp);
+    const openTradeBtn = document.getElementById('openTradeBtn');
+    if (openTradeBtn) openTradeBtn.addEventListener('click', openTradeFromSignal);
+    const clearJBtn = document.getElementById('clearJBtn');
+    if (clearJBtn) clearJBtn.addEventListener('click', clearJ);
+    
+    // Groq
+    const saveGroq = document.getElementById('saveGroqBtn');
+    if (saveGroq) {
+        saveGroq.addEventListener('click', async function() {
+            const k = document.getElementById('groqInp')?.value.trim();
+            if (!k) { toast('Enter key'); return; }
+            await testGroqKey(k);
+            if (groqKey) toast('✅ Saved');
+        });
+    }
+    const testGroq = document.getElementById('testGroqBtn');
+    if (testGroq) {
+        testGroq.addEventListener('click', async function() {
+            const k = document.getElementById('groqInp')?.value.trim();
+            if (!k) { toast('Enter key'); return; }
+            await testGroqKey(k);
+        });
+    }
+    
+    // Deriv
+    const saveDeriv = document.getElementById('saveDerivBtn');
+    if (saveDeriv) saveDeriv.addEventListener('click', saveDerivConfig);
+    const testDeriv = document.getElementById('testDerivBtn');
+    if (testDeriv) testDeriv.addEventListener('click', testDerivConnection);
+    
+    // Bot
+    const startBtn = document.getElementById('botStartBtn');
+    if (startBtn) startBtn.addEventListener('click', botStart);
+    const stopBtn = document.getElementById('botStopBtn');
+    if (stopBtn) stopBtn.addEventListener('click', botStop);
+    const testBtn = document.getElementById('botTestBtn');
+    if (testBtn) testBtn.addEventListener('click', testDerivConnection);
+    const simBtn = document.getElementById('botSimulateBtn');
+    if (simBtn) simBtn.addEventListener('click', botSimulateTrade);
+    const clearBtn = document.getElementById('botClearLogBtn');
+    if (clearBtn) clearBtn.addEventListener('click', botClearLog);
+    const execBtn = document.getElementById('botExecuteBtn');
+    if (execBtn) {
+        execBtn.addEventListener('click', function() {
+            if (!curSig || curSig.signal === 'HOLD') { toast('No signal'); return; }
+            botExecuteTrade(curSig.signal, curSig.entry, curSig.sl, curSig.tp, curSig.conf);
+        });
+    }
+    const cancelBtn = document.getElementById('botCancelPreviewBtn');
+    if (cancelBtn) cancelBtn.addEventListener('click', botCancelPreview);
+    
+    // Bot config
+    document.querySelectorAll('#botRiskPct, #botMaxTrades, #botMinConf, #botDuration').forEach(el => {
+        if (el) el.addEventListener('change', loadBotConfig);
     });
-  });
-  
-  // Journal filters
-  document.querySelectorAll('.fchip[data-filter]').forEach(chip=>{
-    chip.addEventListener('click',function(){
-      document.querySelectorAll('.fchip').forEach(c=>c.classList.remove('on'));
-      this.classList.add('on');
-      renderJ(this.getAttribute('data-filter'));
+    document.querySelectorAll('#botUseSL, #botUseTP, #botAutoConfirm').forEach(el => {
+        if (el) el.addEventListener('change', loadBotConfig);
     });
-  });
-  
-  // Chat
-  const chatFab=document.getElementById('chatFab'); if(chatFab) chatFab.addEventListener('click', toggleChat);
-  const chatClose=document.getElementById('chatCloseBtn'); if(chatClose) chatClose.addEventListener('click', toggleChat);
-  const sendChatBtn=document.getElementById('sendChatBtn'); if(sendChatBtn) sendChatBtn.addEventListener('click', sendChat);
-  const chatInp=document.getElementById('chatInp'); if(chatInp) chatInp.addEventListener('keypress',e=>{if(e.key==='Enter')sendChat();});
-  document.querySelectorAll('.qc[data-q]').forEach(el=>{
-    el.addEventListener('click',function(){ const inp=document.getElementById('chatInp'); if(inp){inp.value=this.getAttribute('data-q'); sendChat();} });
-  });
-  
-  // Load active trade
-  try{const st=localStorage.getItem('qep_activeTrade'); if(st){activeTrade=JSON.parse(st); renderTradeManager(); tradeMonitorIv=setInterval(monitorTrade,5000);}}catch(e){}
-  
-  updParams(); renderSessions(); renderJ('all');
-  setInterval(renderSessions,60000);
-  toast('🚀 Quantum Edge Pro v5 — Deriv Edition ready!');
-  addLog('🚀 Quantum Edge Pro v5 initialized', 'info');
-  addLog('📡 Data: '+(twelveKey?'LIVE available':'Simulated'), 'api');
-  addLog('🤖 Groq: '+(groqKey?'Key saved':'No key'), 'api');
-  addLog('🔌 Deriv: '+(derivAppId && derivApiKey?'Config saved — click "Test Connection"':'No config'), 'api');
+    
+    // Copy
+    const copyAll = document.getElementById('copyAllBtn');
+    if (copyAll) copyAll.addEventListener('click', copyAllOrder);
+    document.querySelectorAll('.exec-copy-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const id = this.getAttribute('data-copy');
+            const val = document.getElementById(id)?.textContent?.trim() || '';
+            copyToClipboard(val, this);
+        });
+    });
+    
+    // Journal filters
+    document.querySelectorAll('.fchip[data-filter]').forEach(chip => {
+        chip.addEventListener('click', function() {
+            document.querySelectorAll('.fchip').forEach(c => c.classList.remove('on'));
+            this.classList.add('on');
+            renderJ(this.getAttribute('data-filter'));
+        });
+    });
+    
+    // Chat
+    const chatFab = document.getElementById('chatFab');
+    if (chatFab) chatFab.addEventListener('click', toggleChat);
+    const chatClose = document.getElementById('chatCloseBtn');
+    if (chatClose) chatClose.addEventListener('click', toggleChat);
+    const sendChatBtn = document.getElementById('sendChatBtn');
+    if (sendChatBtn) sendChatBtn.addEventListener('click', sendChat);
+    const chatInp = document.getElementById('chatInp');
+    if (chatInp) chatInp.addEventListener('keypress', e => { if (e.key === 'Enter') sendChat(); });
+    document.querySelectorAll('.qc[data-q]').forEach(el => {
+        el.addEventListener('click', function() {
+            const inp = document.getElementById('chatInp');
+            if (inp) { inp.value = this.getAttribute('data-q'); sendChat(); }
+        });
+    });
+    
+    // Load active trade
+    try {
+        const st = localStorage.getItem('qep_activeTrade');
+        if (st) { activeTrade = JSON.parse(st); renderTradeManager(); tradeMonitorIv = setInterval(monitorTrade, 5000); }
+    } catch (e) {}
+    
+    // Auto-connect if credentials exist
+    if (derivAppId && derivApiKey) {
+        setTimeout(() => {
+            connectDeriv().then(success => {
+                if (success) {
+                    addLog('✅ Auto-connected to Deriv', 'api');
+                    generateSignal();
+                }
+            });
+        }, 1000);
+    }
+    
+    renderSessions();
+    renderJ('all');
+    setInterval(renderSessions, 60000);
+    toast('🚀 Quantum Edge Pro v6 — Universal Deriv Bot ready!');
+    addLog('🚀 Quantum Edge Pro v6 initialized', 'info');
+    addLog('🔌 Deriv: ' + (derivAppId && derivApiKey ? 'Config saved' : 'No config'), 'api');
 });
 </script>
 </body>
