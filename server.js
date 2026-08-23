@@ -7,7 +7,7 @@ const app = express();
 const port = process.env.PORT || 3000;
 
 // ============================================================
-// CONFIGURATION - Get from environment variables
+// CONFIGURATION
 // ============================================================
 const CLIENT_ID = process.env.CTRADER_CLIENT_ID || '';
 const CLIENT_SECRET = process.env.CTRADER_CLIENT_SECRET || '';
@@ -32,69 +32,123 @@ let wsClients = [];
 let accountInfo = null;
 
 // ============================================================
-// OAUTH ROUTES
+// OAUTH ROUTES - FIXED
 // ============================================================
 
 // Step 1: Redirect user to cTrader for authorization
 app.get('/auth/ctrader', (req, res) => {
+    console.log('🔑 OAuth login requested');
+    console.log('CLIENT_ID:', CLIENT_ID ? '✅ Set' : '❌ Missing');
+    console.log('REDIRECT_URI:', REDIRECT_URI);
+    
     if (!CLIENT_ID) {
         return res.send(`
             <!DOCTYPE html>
             <html>
-            <head><title>⚠️ Configuration Error</title></head>
-            <body style="background:#0a0e1a;color:#e2e8f0;font-family:monospace;padding:40px;">
-                <h1 style="color:#f59e0b;">⚠️ Client ID Not Configured</h1>
-                <p>Please set the <code>CTRADER_CLIENT_ID</code> environment variable on Render.</p>
-                <p>Steps:</p>
-                <ol>
-                    <li>Go to <a href="https://openapi.ctrader.com" target="_blank" style="color:#60a5fa;">openapi.ctrader.com</a></li>
-                    <li>Create a new app</li>
-                    <li>Copy the Client ID and Client Secret</li>
-                    <li>Add them as environment variables on Render</li>
-                </ol>
-                <a href="/" style="color:#f59e0b;">← Back to Bot</a>
+            <head>
+                <title>⚠️ Configuration Error</title>
+                <style>
+                    body { background: #0a0e1a; color: #e2e8f0; font-family: 'Segoe UI', sans-serif; padding: 40px; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+                    .box { background: #1a2a4a; padding: 40px; border-radius: 12px; max-width: 700px; border: 1px solid #f59e0b; }
+                    h1 { color: #f59e0b; }
+                    code { background: #0a1222; padding: 2px 8px; border-radius: 4px; color: #60a5fa; }
+                    .btn { display: inline-block; padding: 12px 24px; background: #f59e0b; color: #0a0e1a; text-decoration: none; border-radius: 8px; font-weight: bold; margin-top: 10px; }
+                    .btn:hover { opacity: 0.8; }
+                </style>
+            </head>
+            <body>
+                <div class="box">
+                    <h1>⚠️ Configuration Error</h1>
+                    <p>The <code>CTRADER_CLIENT_ID</code> environment variable is not set.</p>
+                    <p>Steps to fix:</p>
+                    <ol style="line-height: 1.8; padding-left: 20px;">
+                        <li>Go to <a href="https://openapi.ctrader.com" target="_blank" style="color:#60a5fa;">openapi.ctrader.com</a></li>
+                        <li>Create a new app named <strong>"quantum edge trader"</strong></li>
+                        <li>Copy the <strong>Client ID</strong> and <strong>Client Secret</strong></li>
+                        <li>Add them as environment variables on Render</li>
+                    </ol>
+                    <a href="/" class="btn">← Back to Bot</a>
+                </div>
             </body>
             </html>
         `);
     }
     
+    // Generate state for CSRF protection
     const state = Math.random().toString(36).substring(7);
+    
+    // Build the authorization URL
     const authUrl = `${AUTH_URL}?response_type=code&client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&state=${state}`;
+    
+    console.log('🔄 Redirecting to:', authUrl);
+    
+    // Redirect to cTrader
     res.redirect(authUrl);
 });
 
 // Step 2: Handle callback from cTrader
 app.get('/oauth/callback', async (req, res) => {
+    console.log('📨 OAuth callback received');
+    console.log('Query params:', req.query);
+    
     const { code, state, error } = req.query;
     
     if (error) {
+        console.log('❌ OAuth error:', error);
         return res.send(`
             <!DOCTYPE html>
             <html>
-            <head><title>❌ Authorization Error</title></head>
-            <body style="background:#0a0e1a;color:#e2e8f0;font-family:monospace;padding:40px;">
-                <h1 style="color:#ef4444;">❌ Authorization Error</h1>
-                <p>${error}</p>
-                <a href="/" style="color:#f59e0b;">← Back to Bot</a>
+            <head>
+                <title>❌ Authorization Error</title>
+                <style>
+                    body { background: #0a0e1a; color: #e2e8f0; font-family: 'Segoe UI', sans-serif; padding: 40px; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+                    .box { background: #1a2a4a; padding: 40px; border-radius: 12px; max-width: 700px; border: 1px solid #ef4444; }
+                    h1 { color: #ef4444; }
+                    .btn { display: inline-block; padding: 12px 24px; background: #f59e0b; color: #0a0e1a; text-decoration: none; border-radius: 8px; font-weight: bold; margin-top: 10px; }
+                    .btn:hover { opacity: 0.8; }
+                </style>
+            </head>
+            <body>
+                <div class="box">
+                    <h1>❌ Authorization Error</h1>
+                    <p>${error}</p>
+                    <a href="/" class="btn">← Back to Bot</a>
+                </div>
             </body>
             </html>
         `);
     }
     
     if (!code) {
+        console.log('❌ No authorization code received');
         return res.send(`
             <!DOCTYPE html>
             <html>
-            <head><title>❌ No Code Received</title></head>
-            <body style="background:#0a0e1a;color:#e2e8f0;font-family:monospace;padding:40px;">
-                <h1 style="color:#ef4444;">❌ No Authorization Code Received</h1>
-                <a href="/" style="color:#f59e0b;">← Back to Bot</a>
+            <head>
+                <title>❌ No Code Received</title>
+                <style>
+                    body { background: #0a0e1a; color: #e2e8f0; font-family: 'Segoe UI', sans-serif; padding: 40px; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+                    .box { background: #1a2a4a; padding: 40px; border-radius: 12px; max-width: 700px; border: 1px solid #ef4444; }
+                    h1 { color: #ef4444; }
+                    .btn { display: inline-block; padding: 12px 24px; background: #f59e0b; color: #0a0e1a; text-decoration: none; border-radius: 8px; font-weight: bold; margin-top: 10px; }
+                    .btn:hover { opacity: 0.8; }
+                </style>
+            </head>
+            <body>
+                <div class="box">
+                    <h1>❌ No Authorization Code Received</h1>
+                    <p>Please try logging in again.</p>
+                    <a href="/auth/ctrader" class="btn">🔐 Try Again</a>
+                    <a href="/" class="btn" style="background: #1a2a42; color: #e2e8f0;">← Back to Bot</a>
+                </div>
             </body>
             </html>
         `);
     }
     
     try {
+        console.log('🔄 Exchanging code for token...');
+        
         // Exchange authorization code for access token
         const tokenResponse = await axios.post(TOKEN_URL, {
             grant_type: 'authorization_code',
@@ -103,6 +157,8 @@ app.get('/oauth/callback', async (req, res) => {
             client_secret: CLIENT_SECRET,
             redirect_uri: REDIRECT_URI
         });
+        
+        console.log('✅ Token received successfully');
         
         const { access_token, refresh_token, expires_in } = tokenResponse.data;
         
@@ -119,35 +175,41 @@ app.get('/oauth/callback', async (req, res) => {
                 <title>✅ Authentication Successful</title>
                 <style>
                     body { background: #0a0e1a; color: #e2e8f0; font-family: 'Segoe UI', sans-serif; padding: 40px; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
-                    .box { background: #1a2a4a; padding: 40px; border-radius: 12px; max-width: 700px; border: 1px solid #f59e0b; }
+                    .box { background: #1a2a4a; padding: 40px; border-radius: 12px; max-width: 750px; border: 1px solid #10b981; }
                     h1 { color: #10b981; }
                     .token-display { background: #0a1222; padding: 15px; border-radius: 8px; word-break: break-all; font-size: 12px; border: 1px solid #2a3a5a; margin: 10px 0; max-height: 150px; overflow-y: auto; }
                     .btn { display: inline-block; padding: 12px 24px; background: #f59e0b; color: #0a0e1a; text-decoration: none; border-radius: 8px; font-weight: bold; margin-top: 10px; border: none; cursor: pointer; }
                     .btn:hover { opacity: 0.8; }
                     .btn-green { background: #10b981; }
-                    .info { color: #94a3b8; font-size: 13px; line-height: 1.6; }
+                    .info { color: #94a3b8; font-size: 13px; line-height: 1.8; }
                     .flex { display: flex; gap: 10px; flex-wrap: wrap; }
+                    .app-name { color: #f59e0b; font-weight: bold; }
                 </style>
             </head>
             <body>
                 <div class="box">
                     <h1>✅ Authentication Successful!</h1>
-                    <p>Your cTrader token has been generated.</p>
+                    <p>Your cTrader token has been generated for <span class="app-name">"quantum edge trader"</span>.</p>
+                    
                     <div class="token-display">
                         <strong>🔑 Access Token:</strong><br>
                         ${access_token}
                     </div>
+                    
                     <div class="info">
-                        ⏰ Expires in ${Math.floor(expires_in / 3600)} hours<br>
-                        🔄 Refresh token available for auto-renewal
+                        ⏰ Expires in ${Math.floor(expires_in / 3600)} hours (${Math.floor(expires_in / 86400)} days)<br>
+                        🔄 Refresh token is stored on the server for auto-renewal
                     </div>
+                    
                     <div class="flex">
                         <button onclick="copyToken()" class="btn btn-green">📋 Copy Token</button>
                         <a href="/" class="btn">🚀 Go to Bot</a>
                     </div>
+                    
                     <p class="info" style="margin-top:15px;">
-                        ⚠️ The token is also stored on the server. You can use the "Connect" button in the bot to use it.
+                        💡 The token is also stored on the server. Use the <strong>"Connect"</strong> button in the bot to use it.
                     </p>
+                    
                     <script>
                         function copyToken() {
                             const token = '${access_token}';
@@ -175,15 +237,29 @@ app.get('/oauth/callback', async (req, res) => {
         `);
         
     } catch (error) {
-        console.error('Token exchange error:', error.response?.data || error.message);
+        console.error('❌ Token exchange error:', error.response?.data || error.message);
         res.send(`
             <!DOCTYPE html>
             <html>
-            <head><title>❌ Token Exchange Failed</title></head>
-            <body style="background:#0a0e1a;color:#e2e8f0;font-family:monospace;padding:40px;">
-                <h1 style="color:#ef4444;">❌ Token Exchange Failed</h1>
-                <pre style="background:#0a1222;padding:15px;border-radius:8px;overflow:auto;max-height:300px;">${JSON.stringify(error.response?.data || error.message, null, 2)}</pre>
-                <a href="/" style="color:#f59e0b;">← Back to Bot</a>
+            <head>
+                <title>❌ Token Exchange Failed</title>
+                <style>
+                    body { background: #0a0e1a; color: #e2e8f0; font-family: 'Segoe UI', sans-serif; padding: 40px; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+                    .box { background: #1a2a4a; padding: 40px; border-radius: 12px; max-width: 700px; border: 1px solid #ef4444; }
+                    h1 { color: #ef4444; }
+                    pre { background: #0a1222; padding: 15px; border-radius: 8px; overflow: auto; max-height: 300px; font-size: 12px; border: 1px solid #2a3a5a; }
+                    .btn { display: inline-block; padding: 12px 24px; background: #f59e0b; color: #0a0e1a; text-decoration: none; border-radius: 8px; font-weight: bold; margin-top: 10px; }
+                    .btn:hover { opacity: 0.8; }
+                </style>
+            </head>
+            <body>
+                <div class="box">
+                    <h1>❌ Token Exchange Failed</h1>
+                    <p>Please check that your Client ID and Client Secret are correct.</p>
+                    <pre>${JSON.stringify(error.response?.data || error.message, null, 2)}</pre>
+                    <a href="/auth/ctrader" class="btn">🔐 Try Again</a>
+                    <a href="/" class="btn" style="background: #1a2a42; color: #e2e8f0;">← Back to Bot</a>
+                </div>
             </body>
             </html>
         `);
@@ -264,7 +340,6 @@ app.post('/api/connect', (req, res) => {
             console.log('✅ cTrader WebSocket connected');
             isConnected = true;
             
-            // Request account info
             ctraderWs.send(JSON.stringify({
                 RequestId: 1,
                 MessageType: 'GetAccountInfo'
@@ -294,9 +369,7 @@ app.post('/api/connect', (req, res) => {
                     type: 'message',
                     data: parsed
                 });
-            } catch (e) {
-                // Raw message
-            }
+            } catch (e) {}
         });
         
         ctraderWs.on('error', (error) => {
@@ -389,7 +462,6 @@ app.post('/api/signal', (req, res) => {
     const basePrice = basePrices[symbol] || 1.2;
     const currentPrice = basePrice + (Math.random() - 0.48) * basePrice * 0.002;
     
-    // Generate signal with 17 strategies
     let random = Math.random() * 100;
     let signal = 'HOLD';
     let confidence = 25;
@@ -451,7 +523,7 @@ app.post('/api/signal', (req, res) => {
 
 const server = app.listen(port, () => {
     console.log(`🚀 Server running on port ${port}`);
-    console.log(`🌐 Open https://quantum-edge-pro-bot.onrender.com in your browser`);
+    console.log(`🌐 Open https://quantum-edge-pro-bot.onrender.com`);
     console.log(`🔑 OAuth endpoint: /auth/ctrader`);
 });
 
