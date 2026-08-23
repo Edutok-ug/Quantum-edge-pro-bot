@@ -1,10 +1,16 @@
 services:
   - type: web
-    name: ctrader-bot
+    name: quantum-edge-pro-bot
     env: node
     buildCommand: npm install
     startCommand: node server.js
     envVars:
       - key: PORT
         value: 3000
+      - key: CTRADER_CLIENT_ID
+        value: your_client_id_here
+      - key: CTRADER_CLIENT_SECRET
+        value: your_client_secret_here
+      - key: REDIRECT_URI
+        value: https://quantum-edge-pro-bot.onrender.com/oauth/callback
     plan: free
