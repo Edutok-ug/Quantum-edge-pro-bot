@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quantum Edge Pro | cTrader Bot</title>
+    <title>Quantum Edge Pro — cTrader Bot</title>
     <style>
         *{margin:0;padding:0;box-sizing:border-box;}
         body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:#0a0e1a;color:#e2e8f0;padding:15px;}
@@ -23,13 +23,14 @@
         .card-title{font-size:0.7rem;text-transform:uppercase;letter-spacing:1px;color:#64748b;margin-bottom:10px;}
         input,select{width:100%;padding:10px;background:#0a1222;border:1px solid #1a2a42;border-radius:8px;color:#e2e8f0;font-size:0.9rem;margin-bottom:8px;}
         input:focus,select:focus{outline:none;border-color:#f59e0b;}
-        .btn{padding:10px 20px;border:none;border-radius:8px;font-weight:600;cursor:pointer;transition:all 0.2s;font-size:0.85rem;}
+        .btn{padding:10px 20px;border:none;border-radius:8px;font-weight:600;cursor:pointer;transition:all 0.2s;font-size:0.85rem;text-decoration:none;display:inline-block;text-align:center;}
         .btn:hover{transform:translateY(-1px);filter:brightness(1.1);}
         .btn-primary{background:#f59e0b;color:#0a0e1a;}
         .btn-success{background:#10b981;color:#0a0e1a;}
         .btn-danger{background:#ef4444;color:#fff;}
         .btn-secondary{background:#1a2a42;color:#e2e8f0;}
         .btn-purple{background:#8b5cf6;color:#fff;}
+        .btn-oauth{background:#2563eb;color:#fff;}
         .btn-sm{padding:6px 14px;font-size:0.75rem;}
         .flex{display:flex;gap:8px;flex-wrap:wrap;}
         .log-box{background:#0a1222;border:1px solid #1a2a42;border-radius:8px;padding:12px;height:250px;overflow-y:auto;font-family:monospace;font-size:0.75rem;line-height:1.6;}
@@ -50,6 +51,8 @@
         .order-preview{background:#0a1222;padding:12px;border-radius:8px;border:1px solid #1a2a42;}
         .order-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:0.85rem;}
         .order-grid .label{color:#94a3b8;}
+        .oauth-info{background:#1a2a4a;padding:12px;border-radius:8px;border:1px solid #2a3a5a;margin:8px 0;font-size:0.8rem;}
+        .oauth-info .highlight{color:#f59e0b;}
         @media(max-width:680px){.grid{grid-template-columns:1fr;}.order-grid{grid-template-columns:1fr;}}
     </style>
 </head>
@@ -58,7 +61,7 @@
 
     <div class="header">
         <h1>⚡ Quantum Edge Pro — cTrader Bot</h1>
-        <p>AI-powered trading signals with cTrader WebSocket integration</p>
+        <p>AI-powered trading signals with OAuth integration</p>
         <div class="status-bar">
             <div class="status-item">
                 <span class="status-dot off" id="statusDot"></span>
@@ -85,7 +88,21 @@
         <div>
             <div class="card">
                 <div class="card-title">🔌 cTrader Connection</div>
-                <input type="text" id="tokenInput" placeholder="Enter your cTrader token (starts with ct-)" value="">
+                
+                <!-- OAuth Login Button -->
+                <div class="oauth-info">
+                    🔑 <strong>Step 1:</strong> Get a production token via OAuth
+                    <div style="margin-top:8px;">
+                        <a href="/auth/ctrader" class="btn btn-oauth" style="width:100%;">
+                            🔐 Login with cTrader
+                        </a>
+                    </div>
+                    <div style="margin-top:6px;font-size:0.7rem;color:#94a3b8;">
+                        Or paste your existing token below
+                    </div>
+                </div>
+                
+                <input type="text" id="tokenInput" placeholder="Enter your cTrader token (ct-...)" value="">
                 <input type="text" id="accountInput" placeholder="Account ID (e.g., 5322914)" value="5322914">
                 <div class="flex">
                     <button class="btn btn-primary" onclick="connect()">🔗 Connect</button>
@@ -155,7 +172,7 @@
     <div class="card">
         <div class="card-title">📋 Activity Log</div>
         <div class="log-box" id="logBox">
-            <div class="log-entry log-info">🚀 Bot ready. Connect to cTrader to start trading.</div>
+            <div class="log-entry log-info">🚀 Bot ready. Get a token via "Login with cTrader" first.</div>
         </div>
     </div>
 
@@ -192,7 +209,7 @@ async function connect() {
     const account = document.getElementById('accountInput').value.trim();
 
     if (!token) {
-        log('❌ Please enter your cTrader token', 'error');
+        log('❌ Please enter your cTrader token or use "Login with cTrader"', 'error');
         return;
     }
 
@@ -251,6 +268,9 @@ async function testConnection() {
             }
         } else {
             log('⚠️ cTrader is not connected', 'warn');
+        }
+        if (data.hasToken) {
+            log('✅ OAuth token is stored on server', 'success');
         }
     } catch (error) {
         log('❌ Health check failed: ' + error.message, 'error');
@@ -423,7 +443,6 @@ TIMEFRAME: ${s.timeframe}
     navigator.clipboard.writeText(orderText).then(() => {
         log('📋 Order copied to clipboard!', 'success');
     }).catch(() => {
-        // Fallback
         const textarea = document.createElement('textarea');
         textarea.value = orderText;
         document.body.appendChild(textarea);
@@ -435,7 +454,7 @@ TIMEFRAME: ${s.timeframe}
 }
 
 // ============================================================
-// WEBSOCKET LISTENER (For real-time updates)
+// WEBSOCKET LISTENER
 // ============================================================
 function connectWebSocket() {
     const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
@@ -456,9 +475,6 @@ function connectWebSocket() {
             if (data.type === 'price') {
                 document.getElementById('priceDisplay').textContent = data.price;
             }
-            if (data.type === 'message' && data.data) {
-                // Handle cTrader messages
-            }
         } catch (e) {}
     };
 
@@ -469,27 +485,13 @@ function connectWebSocket() {
 }
 
 // ============================================================
-// AUTO-GENERATE SIGNAL ON LOAD
-// ============================================================
-setTimeout(() => {
-    const token = document.getElementById('tokenInput').value;
-    if (token) {
-        connect();
-    }
-    generateSignal();
-}, 1000);
-
-// ============================================================
 // INIT
 // ============================================================
 log('🚀 Quantum Edge Pro v6 loaded', 'info');
-log('💡 Enter your cTrader token and click "Connect"', 'info');
-log('🧠 Click "Generate Signal" for AI prediction', 'info');
+log('🔑 Click "Login with cTrader" to get a production token', 'info');
+log('💡 Or paste your existing token and click "Connect"', 'info');
 
-// Connect WebSocket for real-time updates
 connectWebSocket();
-
-// Auto-test on load
 setTimeout(testConnection, 2000);
 </script>
 </body>
