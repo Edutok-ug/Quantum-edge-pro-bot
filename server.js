@@ -7,16 +7,16 @@ const app = express();
 const port = process.env.PORT || 3000;
 
 // ============================================================
-// CONFIGURATION
-// ============================================================
-// ============================================================
-// CONFIGURATION
+// CONFIGURATION - CORRECT URLs from cTrader documentation
 // ============================================================
 const CLIENT_ID = process.env.CTRADER_CLIENT_ID || '';
 const CLIENT_SECRET = process.env.CTRADER_CLIENT_SECRET || '';
 const REDIRECT_URI = process.env.REDIRECT_URI || 'https://quantum-edge-pro-bot.onrender.com/oauth/callback';
-const AUTH_URL = 'https://openapi.ctrader.com/apps/authorize';
+
+// CORRECT URLs based on cTrader documentation
+const AUTH_URL = 'https://id.ctrader.com/settings/openapi/grantaccess';
 const TOKEN_URL = 'https://openapi.ctrader.com/apps/token';
+
 // ============================================================
 // MIDDLEWARE
 // ============================================================
@@ -34,7 +34,7 @@ let wsClients = [];
 let accountInfo = null;
 
 // ============================================================
-// OAUTH ROUTES - FIXED
+// OAUTH ROUTES - FIXED URLs
 // ============================================================
 
 // Step 1: Redirect user to cTrader for authorization
@@ -79,8 +79,8 @@ app.get('/auth/ctrader', (req, res) => {
     // Generate state for CSRF protection
     const state = Math.random().toString(36).substring(7);
     
-    // Build the authorization URL
-    const authUrl = `${AUTH_URL}?response_type=code&client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&state=${state}`;
+    // Build the authorization URL using the CORRECT endpoint
+    const authUrl = `${AUTH_URL}?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&scope=trading&state=${state}`;
     
     console.log('🔄 Redirecting to:', authUrl);
     
@@ -114,7 +114,8 @@ app.get('/oauth/callback', async (req, res) => {
                 <div class="box">
                     <h1>❌ Authorization Error</h1>
                     <p>${error}</p>
-                    <a href="/" class="btn">← Back to Bot</a>
+                    <a href="/auth/ctrader" class="btn">🔐 Try Again</a>
+                    <a href="/" class="btn" style="background: #1a2a42; color: #e2e8f0;">← Back to Bot</a>
                 </div>
             </body>
             </html>
@@ -155,19 +156,19 @@ app.get('/oauth/callback', async (req, res) => {
         const tokenResponse = await axios.post(TOKEN_URL, {
             grant_type: 'authorization_code',
             code: code,
+            redirect_uri: REDIRECT_URI,
             client_id: CLIENT_ID,
-            client_secret: CLIENT_SECRET,
-            redirect_uri: REDIRECT_URI
+            client_secret: CLIENT_SECRET
         });
         
         console.log('✅ Token received successfully');
         
-        const { access_token, refresh_token, expires_in } = tokenResponse.data;
+        const { accessToken, refreshToken, expireAt } = tokenResponse.data;
         
         // Store tokens
-        userTokens.accessToken = access_token;
-        userTokens.refreshToken = refresh_token;
-        userTokens.expiresAt = Date.now() + expires_in * 1000;
+        userTokens.accessToken = accessToken;
+        userTokens.refreshToken = refreshToken;
+        userTokens.expiresAt = Date.now() + (parseInt(expireAt) * 1000);
         
         // Return success page
         res.send(`
@@ -195,11 +196,11 @@ app.get('/oauth/callback', async (req, res) => {
                     
                     <div class="token-display">
                         <strong>🔑 Access Token:</strong><br>
-                        ${access_token}
+                        ${accessToken}
                     </div>
                     
                     <div class="info">
-                        ⏰ Expires in ${Math.floor(expires_in / 3600)} hours (${Math.floor(expires_in / 86400)} days)<br>
+                        ⏰ Expires in ${Math.floor(parseInt(expireAt) / 3600)} hours (${Math.floor(parseInt(expireAt) / 86400)} days)<br>
                         🔄 Refresh token is stored on the server for auto-renewal
                     </div>
                     
@@ -214,7 +215,7 @@ app.get('/oauth/callback', async (req, res) => {
                     
                     <script>
                         function copyToken() {
-                            const token = '${access_token}';
+                            const token = '${accessToken}';
                             if (navigator.clipboard) {
                                 navigator.clipboard.writeText(token).then(() => {
                                     alert('✅ Token copied to clipboard!');
@@ -302,13 +303,13 @@ app.post('/api/refresh-token', async (req, res) => {
             client_secret: CLIENT_SECRET
         });
         
-        const { access_token, refresh_token, expires_in } = response.data;
-        userTokens.accessToken = access_token;
-        userTokens.refreshToken = refresh_token;
-        userTokens.expiresAt = Date.now() + expires_in * 1000;
+        const { accessToken, refreshToken, expireAt } = response.data;
+        userTokens.accessToken = accessToken;
+        userTokens.refreshToken = refreshToken;
+        userTokens.expiresAt = Date.now() + (parseInt(expireAt) * 1000);
         
         res.json({
-            accessToken: access_token,
+            accessToken: accessToken,
             expiresAt: userTokens.expiresAt
         });
         
