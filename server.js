@@ -7,13 +7,15 @@ const app = express();
 const port = process.env.PORT || 3000;
 
 // ============================================================
-// CONFIGURATION - CORRECT URLs from cTrader documentation
+// CONFIGURATION
 // ============================================================
 const CLIENT_ID = process.env.CTRADER_CLIENT_ID || '';
 const CLIENT_SECRET = process.env.CTRADER_CLIENT_SECRET || '';
+
+// IMPORTANT: This MUST match exactly what's in cTrader
 const REDIRECT_URI = process.env.REDIRECT_URI || 'https://quantum-edge-pro-bot.onrender.com/oauth/callback';
 
-// CORRECT URLs based on cTrader documentation
+// cTrader OAuth URLs
 const AUTH_URL = 'https://id.ctrader.com/settings/openapi/grantaccess';
 const TOKEN_URL = 'https://openapi.ctrader.com/apps/token';
 
@@ -34,7 +36,7 @@ let wsClients = [];
 let accountInfo = null;
 
 // ============================================================
-// OAUTH ROUTES - FIXED URLs
+// OAUTH ROUTES
 // ============================================================
 
 // Step 1: Redirect user to cTrader for authorization
@@ -79,7 +81,7 @@ app.get('/auth/ctrader', (req, res) => {
     // Generate state for CSRF protection
     const state = Math.random().toString(36).substring(7);
     
-    // Build the authorization URL using the CORRECT endpoint
+    // Build the authorization URL
     const authUrl = `${AUTH_URL}?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&scope=trading&state=${state}`;
     
     console.log('🔄 Redirecting to:', authUrl);
@@ -92,9 +94,11 @@ app.get('/auth/ctrader', (req, res) => {
 app.get('/oauth/callback', async (req, res) => {
     console.log('📨 OAuth callback received');
     console.log('Query params:', req.query);
+    console.log('Full URL:', req.protocol + '://' + req.get('host') + req.originalUrl);
     
     const { code, state, error } = req.query;
     
+    // Check for error
     if (error) {
         console.log('❌ OAuth error:', error);
         return res.send(`
@@ -122,6 +126,7 @@ app.get('/oauth/callback', async (req, res) => {
         `);
     }
     
+    // Check if we have a code
     if (!code) {
         console.log('❌ No authorization code received');
         return res.send(`
@@ -153,12 +158,16 @@ app.get('/oauth/callback', async (req, res) => {
         console.log('🔄 Exchanging code for token...');
         
         // Exchange authorization code for access token
-        const tokenResponse = await axios.post(TOKEN_URL, {
-            grant_type: 'authorization_code',
-            code: code,
-            redirect_uri: REDIRECT_URI,
-            client_id: CLIENT_ID,
-            client_secret: CLIENT_SECRET
+        const tokenResponse = await axios({
+            method: 'POST',
+            url: TOKEN_URL,
+            params: {
+                grant_type: 'authorization_code',
+                code: code,
+                redirect_uri: REDIRECT_URI,
+                client_id: CLIENT_ID,
+                client_secret: CLIENT_SECRET
+            }
         });
         
         console.log('✅ Token received successfully');
@@ -186,13 +195,12 @@ app.get('/oauth/callback', async (req, res) => {
                     .btn-green { background: #10b981; }
                     .info { color: #94a3b8; font-size: 13px; line-height: 1.8; }
                     .flex { display: flex; gap: 10px; flex-wrap: wrap; }
-                    .app-name { color: #f59e0b; font-weight: bold; }
                 </style>
             </head>
             <body>
                 <div class="box">
                     <h1>✅ Authentication Successful!</h1>
-                    <p>Your cTrader token has been generated for <span class="app-name">"quantum edge trader"</span>.</p>
+                    <p>Your cTrader token has been generated.</p>
                     
                     <div class="token-display">
                         <strong>🔑 Access Token:</strong><br>
@@ -200,8 +208,8 @@ app.get('/oauth/callback', async (req, res) => {
                     </div>
                     
                     <div class="info">
-                        ⏰ Expires in ${Math.floor(parseInt(expireAt) / 3600)} hours (${Math.floor(parseInt(expireAt) / 86400)} days)<br>
-                        🔄 Refresh token is stored on the server for auto-renewal
+                        ⏰ Expires in ${Math.floor(parseInt(expireAt) / 3600)} hours<br>
+                        🔄 Refresh token is stored on the server
                     </div>
                     
                     <div class="flex">
@@ -270,7 +278,7 @@ app.get('/oauth/callback', async (req, res) => {
 });
 
 // ============================================================
-// API ROUTES
+// API ROUTES - (same as before)
 // ============================================================
 
 // Get stored token
@@ -296,11 +304,15 @@ app.post('/api/refresh-token', async (req, res) => {
     }
     
     try {
-        const response = await axios.post(TOKEN_URL, {
-            grant_type: 'refresh_token',
-            refresh_token: userTokens.refreshToken,
-            client_id: CLIENT_ID,
-            client_secret: CLIENT_SECRET
+        const response = await axios({
+            method: 'POST',
+            url: TOKEN_URL,
+            params: {
+                grant_type: 'refresh_token',
+                refresh_token: userTokens.refreshToken,
+                client_id: CLIENT_ID,
+                client_secret: CLIENT_SECRET
+            }
         });
         
         const { accessToken, refreshToken, expireAt } = response.data;
@@ -526,7 +538,7 @@ app.post('/api/signal', (req, res) => {
 
 const server = app.listen(port, () => {
     console.log(`🚀 Server running on port ${port}`);
-    console.log(`🌐 Open https://quantum-edge-pro-bot.onrender.com`);
+    console.log(`🌐 Open your bot at your Render URL`);
     console.log(`🔑 OAuth endpoint: /auth/ctrader`);
 });
 
