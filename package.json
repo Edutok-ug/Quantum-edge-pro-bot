@@ -1,10 +1,11 @@
 {
-  "name": "ctrader-bot",
+  "name": "pepperstone-ctrader-bot",
   "version": "1.0.0",
-  "description": "Quantum Edge Pro - cTrader Auto Trading Bot with OAuth",
+  "description": "Quantum Edge Pro - Pepperstone cTrader Trading Bot",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "dev": "nodemon server.js"
   },
   "dependencies": {
     "express": "^4.18.2",
@@ -12,5 +13,8 @@
     "cors": "^2.8.5",
     "axios": "^1.6.0",
     "dotenv": "^16.3.1"
+  },
+  "engines": {
+    "node": ">=20.0.0 <22.0.0"
   }
 }
