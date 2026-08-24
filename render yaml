@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: quantum-edge-pro-bot
+    name: pepperstone-ctrader-bot
     env: node
     buildCommand: npm install
     startCommand: node server.js
@@ -8,9 +8,9 @@ services:
       - key: PORT
         value: 3000
       - key: CTRADER_CLIENT_ID
-        value: YOUR_CLIENT_ID_FROM_CTRADER
+        sync: false
       - key: CTRADER_CLIENT_SECRET
-        value: YOUR_CLIENT_SECRET_FROM_CTRADER
-      - key: REDIRECT_URI
+        sync: false
+      - key: CTRADER_REDIRECT_URI
         value: https://quantum-edge-pro-bot.onrender.com/oauth/callback
     plan: free
