@@ -9,12 +9,14 @@ const port = process.env.PORT || 3000;
 // ============================================================
 // CONFIGURATION
 // ============================================================
+// ============================================================
+// CONFIGURATION
+// ============================================================
 const CLIENT_ID = process.env.CTRADER_CLIENT_ID || '';
 const CLIENT_SECRET = process.env.CTRADER_CLIENT_SECRET || '';
 const REDIRECT_URI = process.env.REDIRECT_URI || 'https://quantum-edge-pro-bot.onrender.com/oauth/callback';
 const AUTH_URL = 'https://openapi.ctrader.com/apps/authorize';
 const TOKEN_URL = 'https://openapi.ctrader.com/apps/token';
-
 // ============================================================
 // MIDDLEWARE
 // ============================================================
